@@ -2,8 +2,10 @@
   "ExpandedNodes": [
     "",
     "\\Electiva4",
-    "\\Electiva4\\Controllers"
+    "\\Electiva4\\Controllers",
+    "\\Electiva4\\Views",
+    "\\Electiva4\\Views\\Menu"
   ],
-  "SelectedNode": "\\Electiva4\\Controllers\\ReporteClientesController.cs",
+  "SelectedNode": "\\Electiva4\\Views\\Menu\\Productos.cshtml",
   "PreviewInSolutionExplorer": false
 }
