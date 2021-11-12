@@ -2,23 +2,20 @@
 using iTextSharp.text.pdf;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Windows.Forms;
 
 namespace Electiva4.Controllers
 {
-    public class ReporteCompraProductosController : Controller
+    public class ReporteClientesController : Controller
     {
-        // GET: ReporteCompraProductos
+        // GET: ReporteClientes
         public ActionResult Index()
         {
             return View();
         }
-
-        public ActionResult pdfCompraProductosGeneral()
+        public ActionResult pdfClientes()
         {
             try
             {
@@ -37,7 +34,7 @@ namespace Electiva4.Controllers
 
 
                 /* Variables para encabezado */
-                string TITULO = "REPORTE GENERAL DE COMPRA DE PRODUCTOS";//Título a mostrar en el Encabezado
+                string TITULO = "REPORTE GENERAL DE CLIENTES";//Título a mostrar en el Encabezado
                 string fechaEmision = "10-11-2021";//new LUtils().fechaHoraActual();//Fecha de creacion para poner en el PDF
 
                 //Obtenemos los datos del Encabezado
@@ -46,7 +43,7 @@ namespace Electiva4.Controllers
                 string nombreEmisor = "HUGO RODRÍGUEZ";//String.Concat(eUsuario.Nombres, " ", eUsuario.Apellidos);//Nombre del Usuario
                 string nombreEmpresa = "MI EMPRESA";//eUsuario.NombreEmpresa;//Nombre de la Empresa
                 string filtro = "09-11-2021 a 10-11-2021";//String.Concat(fechaInicio, " a ", fechaFinal);//Nombre de la Empresa
-                double montoCompra = 150.0;//El monto total de la compra
+                
 
                 document.AddCreationDate();
 
@@ -109,31 +106,33 @@ namespace Electiva4.Controllers
                 document.Add(new Paragraph("                       "));
                 #endregion
 
-                #region Listado General de las Compras
+                #region Listado General de Clientes
                 //Encabezado de la tabla
-                PdfPTable table = new PdfPTable(4);
-                float[] widths = new float[] { 15f, 40f, 20f, 25f };
+                PdfPTable table = new PdfPTable(5);
+                float[] widths = new float[] { 10f, 40f, 20f, 20f, 10f };
                 table.SetWidths(widths);
 
                 _cell = new PdfPCell(new Paragraph("#", negrita));
                 _cell.HorizontalAlignment = Element.ALIGN_CENTER;
                 table.AddCell(_cell);
 
-                _cell = new PdfPCell(new Paragraph("PROVEEDOR", negrita));
+                _cell = new PdfPCell(new Paragraph("NOMBRE", negrita));
                 _cell.HorizontalAlignment = Element.ALIGN_CENTER;
                 table.AddCell(_cell);
 
-                _cell = new PdfPCell(new Paragraph("FECHA INGRESO", negrita));
+                _cell = new PdfPCell(new Paragraph("TELEFONO", negrita));
                 _cell.HorizontalAlignment = Element.ALIGN_CENTER;
                 table.AddCell(_cell);
 
-                _cell = new PdfPCell(new Paragraph("MONTO DE COMPRA", negrita));
+                _cell = new PdfPCell(new Paragraph("CORREO", negrita));
+                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                table.AddCell(_cell);
+
+                _cell = new PdfPCell(new Paragraph("SEXO", negrita));
                 _cell.HorizontalAlignment = Element.ALIGN_CENTER;
                 table.AddCell(_cell);
 
                 table.WidthPercentage = 100f;
-
-                int numCompra = 1;
 
                 /*foreach (EReporteProductosEncabezado eReporteProductosEncabezado in eReporteProductosEncabezadoList)
                 {
@@ -156,33 +155,16 @@ namespace Electiva4.Controllers
                     montoCompra += eReporteProductosEncabezado.Monto;
                 }*/
 
-                #region Total de Compra
-                _cell = new PdfPCell(new Paragraph("", fuente));
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                _cell.Border = Rectangle.LEFT_BORDER | Rectangle.BOTTOM_BORDER;
-                table.AddCell(_cell);
-
-                _cell = new PdfPCell(new Paragraph("", fuente));
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                _cell.Border = Rectangle.TOP_BORDER | Rectangle.BOTTOM_BORDER;
-                table.AddCell(_cell);
-
-                _cell = new PdfPCell(new Paragraph("TOTAL", negrita));
-                _cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                table.AddCell(_cell);
-
-                _cell = new PdfPCell(new Paragraph(String.Concat("$", montoCompra.ToString("0.00")), fuente));
-                _cell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                table.AddCell(_cell);
+              
 
                 document.Add(table);
-                #endregion
+               
 
                 #endregion
 
                 document.Close();
 
-                string nomPDF = "ReporteCompra";
+                string nomPDF = "ReporteClientes";
 
                 Response.ContentType = "application/pdf";
                 Response.AppendHeader("content-disposition",
@@ -202,49 +184,6 @@ namespace Electiva4.Controllers
             }
 
             return null;
-        }
-    }
-
-    //Esta clase y sus métodos permiten agregar el número de página
-    public class PageEventHelperRU : PdfPageEventHelper
-    {
-        PdfContentByte cb;
-        PdfTemplate template;
-
-
-        public override void OnOpenDocument(PdfWriter writer, Document document)
-        {
-            cb = writer.DirectContent;
-            template = cb.CreateTemplate(50, 50);
-        }
-
-        public override void OnEndPage(PdfWriter writer, Document doc)
-        {
-
-            BaseColor grey = new BaseColor(128, 128, 128);
-            iTextSharp.text.Font font = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, grey);
-
-            //tbl footer
-            PdfPTable footerTbl = new PdfPTable(1);
-            //footerTbl.TotalWidth = doc.PageSize.Width;
-            footerTbl.TotalWidth = doc.PageSize.Width - doc.LeftMargin - doc.RightMargin;
-            footerTbl.DefaultCell.Border = 0;
-
-            //numero de la page
-            Chunk myFooter = new Chunk("Página " + (doc.PageNumber));
-            PdfPCell footer = new PdfPCell(new Phrase(myFooter));
-            footer.Border = iTextSharp.text.Rectangle.NO_BORDER;
-            footer.HorizontalAlignment = Element.ALIGN_RIGHT;
-            footerTbl.AddCell(footer);
-
-
-            footerTbl.WriteSelectedRows(0, -1, doc.LeftMargin, writer.PageSize.GetBottom(doc.BottomMargin) - 5, writer.DirectContent);
-        }
-
-        public override void OnCloseDocument(PdfWriter writer, Document document)
-        {
-            base.OnCloseDocument(writer, document);
-
         }
     }
 }

@@ -128,8 +128,11 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\MenuController.cs" />
+    <Compile Include="Controllers\ReporteClientesController.cs" />
     <Compile Include="Controllers\ReporteCompraProductosController.cs" />
     <Compile Include="Controllers\ReporteProductosController.cs" />
+    <Compile Include="Controllers\ReporteReservasController.cs" />
+    <Compile Include="Controllers\ReporteVentasController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -176,6 +179,9 @@
     <Content Include="Views\Menu\Ventas.cshtml" />
     <Content Include="Views\ReporteCompraProductos\ReporteCompraProductos.cshtml" />
     <Content Include="Views\ReporteProductos\ReporteProductos.cshtml" />
+    <Content Include="Views\ReporteClientes\ReporteClientes.cshtml" />
+    <Content Include="Views\ReporteReservas\ReporteReservas.cshtml" />
+    <Content Include="Views\ReporteVentas\ReporteVentas.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
