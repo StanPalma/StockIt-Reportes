@@ -127,12 +127,17 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
+    <Compile Include="Controllers\ReporteClientesController.cs" />
     <Compile Include="Controllers\ReporteCompraProductosController.cs" />
     <Compile Include="Controllers\ReporteProductosController.cs" />
+    <Compile Include="Controllers\ReporteReservasController.cs" />
+    <Compile Include="Controllers\ReporteVentasController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Login.cs" />
     <Compile Include="Models\ViewModels\TablaVentas.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -141,10 +146,15 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="css\font-awesome.min.css" />
+    <Content Include="css\style.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="images\1.png" />
+    <Content Include="images\undraw_Work_time_re_hdyv.svg" />
+    <Content Include="Resources\logoStockIt.jpg" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
@@ -176,6 +186,12 @@
     <Content Include="Views\Menu\Ventas.cshtml" />
     <Content Include="Views\ReporteCompraProductos\ReporteCompraProductos.cshtml" />
     <Content Include="Views\ReporteProductos\ReporteProductos.cshtml" />
+    <Content Include="Views\ReporteClientes\ReporteClientes.cshtml" />
+    <Content Include="Views\ReporteReservas\ReporteReservas.cshtml" />
+    <Content Include="Views\ReporteVentas\ReporteVentas.cshtml" />
+    <Content Include="Views\Login\Login.cshtml" />
+    <Content Include="Views\Login\_LayoutPageLogin.cshtml" />
+    <Content Include="Views\Error.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
