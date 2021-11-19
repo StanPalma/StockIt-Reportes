@@ -11,7 +11,15 @@ namespace Electiva4.Controllers
         // GET: Menu
         public ActionResult Index()
         {
-            return View();
+            if (Session["UserCorreo"] != null)
+            {
+                return View();
+            }
+            else
+            {
+                return Redirect("~/Login/Login");
+            }
+            
         }
 
         public ActionResult Productos()

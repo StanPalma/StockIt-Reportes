@@ -137,10 +137,37 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ECategoria.cs" />
+    <Compile Include="Models\ECliente.cs" />
+    <Compile Include="Models\EDetalleCompraProductos.cs" />
+    <Compile Include="Models\EDetalleFacturacion.cs" />
+    <Compile Include="Models\EDetalleReservas.cs" />
+    <Compile Include="Models\EEncabezadoCompraProductos.cs" />
+    <Compile Include="Models\EEncabezadoFacturacion.cs" />
+    <Compile Include="Models\EEncabezadoReservas.cs" />
+    <Compile Include="Models\EProducto.cs" />
+    <Compile Include="Models\EProveedor.cs" />
+    <Compile Include="Models\EReporteFacturacionDetalle.cs" />
+    <Compile Include="Models\EReporteFacturacionEncabezado.cs" />
+    <Compile Include="Models\EReporteProductos.cs" />
+    <Compile Include="Models\EReporteProductosDetalle.cs" />
+    <Compile Include="Models\EReporteProductosEncabezado.cs" />
+    <Compile Include="Models\EReporteReservasDetalle.cs" />
+    <Compile Include="Models\EReporteReservasEncabezado.cs" />
     <Compile Include="Models\EUsuario.cs" />
     <Compile Include="Models\Login.cs" />
     <Compile Include="Models\ViewModels\TablaVentas.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\WSStockIt\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -158,6 +185,10 @@
     <Content Include="Resources\logoStockIt.jpg" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -169,6 +200,11 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Web References\WSStockIt\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </Content>
+    <None Include="Web References\WSStockIt\WebServiceSI.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -193,6 +229,7 @@
     <Content Include="Views\Login\Login.cshtml" />
     <Content Include="Views\Login\_LayoutPageLogin.cshtml" />
     <Content Include="Views\Error.cshtml" />
+    <None Include="Web References\WSStockIt\WebServiceSI.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -209,6 +246,25 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://localhost/WebService/WebServiceSI.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\WSStockIt\</RelPath>
+      <UpdateFromURL>http://localhost/WebService/WebServiceSI.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>Electiva4_localhost_WebServiceSI</CachedSettingsPropName>
+    </WebReferenceUrl>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

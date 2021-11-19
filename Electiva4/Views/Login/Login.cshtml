@@ -4,6 +4,39 @@
     Layout = "~/Views/Login/_LayoutPageLogin.cshtml";
 }
 
+<script type="text/javascript"
+        src="~/Scripts/jquery-3.4.1.min.js">
+</script>
+
+<script>
+        $(function () {
+            $("#btnLogin").click(function () {
+                var url = "@Url.Action("Verify", "Login")";
+                var email = $("#txtEmail").val();
+                var password = $("#txtPassword").val();
+                var data = { email: email, password: password };
+
+                $.post(url, data).done(function (data) {
+                    if (parseInt(data) > 0) {
+                        //Limpiamos los datos
+                        $("#txtEmail").val('');
+                        $("#txtPassword").val('');
+
+                        //Redirigir a página de menú principal
+                        window.location.href = "/Menu";
+
+                    } else if (parseInt(data) == -1) {
+                        alert("Contraseña incorrecta.");
+                    } else if (parseInt(data) == -2) {
+                        alert("No existe ningún usuario registrado con ese correo electrónico.");
+                    } else {
+                        alert("Hubo un error. Intente más tarde.");
+                    }
+                });
+            });
+        });
+</script>
+
 <!-- form section start -->
 <section class="w3l-hotair-form">
     <h1>Reportería StockIt</h1>
@@ -13,10 +46,10 @@
             <div class="main-hotair">
                 <div class="content-wthree">
                     <h2>Log In</h2>
-                    <form action="Verify" method="post">
-                        <input type="text" class="text" name="text" placeholder="Usuario" required="" autofocus>
-                        <input type="password" class="password" name="password" placeholder="Contraseña" required="" autofocus>
-                        <button class="btn" type="submit">Log In</button>
+                    <form action="" id="myForm">
+                        <input type="text" class="text" id="txtEmail" name="text" placeholder="Correo" required="" autofocus>
+                        <input type="password" class="password" id="txtPassword" name="password" placeholder="Contraseña" required="" autofocus>
+                        <button class="btn" id="btnLogin" type="button">Log In</button>
                     </form>
                 </div>
                 <div class="w3l_form align-self">
