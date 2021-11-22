@@ -10,6 +10,14 @@
 
     var opcionSeleccionada = 0;// 1 - Encabezado, 2 - Detalle
 
+    //Función para cuando cambie Fecha Inicio o Fecha Final
+    function cambioFecha() {
+        $(function () {
+            $("#btnImprimir").addClass('disabled');
+        });
+    }
+
+
     //Función para cargar el DetalleCompra
     $(document).ready(function () {
 
@@ -52,6 +60,11 @@
                 "<td>$" + data[i].PrecioUnitario.toFixed(2) + "</td>" +
                 "<td>$" + data[i].PrecioVenta.toFixed(2) + "</td>" +
                     "</tr >";
+            }
+
+            //Habilitamos el botón si la data es mayor a 0
+            if (data.length > 0) {
+                $("#btnImprimir").removeClass('disabled');
             }
 
             $("#btnLimpiar").val('Volver');
@@ -102,6 +115,11 @@
                     "</tr >";
             }
 
+            //Habilitamos el botón si la data es mayor a 0
+            if (data.length > 0) {
+                $("#btnImprimir").removeClass('disabled');
+            }
+
             opcionSeleccionada = 1;
 
             });
@@ -114,6 +132,7 @@
             if (opcionSeleccionada == 1) {
                 $("#dtpFechaInicio").val(null);
                 $("#dtpFechaFinal").val(null);
+                $("#btnImprimir").addClass('disabled');
 
                 document.getElementById("tableDatos").innerHTML =
                     "<tr>" +
@@ -143,13 +162,13 @@
 
 <div class="col-lg-6">
     <label>Fecha inicio</label>
-    <input class="form-control" id="dtpFechaInicio" type="date" />
+    <input class="form-control" id="dtpFechaInicio" onchange="cambioFecha();" type="date" />
     <br />
 </div>
 
 <div class="col-lg-6">
     <label>Fecha final</label>
-    <input class="form-control" id="dtpFechaFinal" type="date" />
+    <input class="form-control" id="dtpFechaFinal" onchange="cambioFecha();" type="date" />
     <br />
 </div>
 
@@ -161,12 +180,10 @@
         <input class="btn-danger btn" id="btnLimpiar" onclick="limpiar();" type="button" value="Limpiar" />
     </div>
     <div class="col-lg-1">
-        <a href="~/ReporteCompraProductos/pdfCompraProductosGeneral">
-            <div class="btn-primary btn media-right">
-                <span class="glyphicon glyphicon-print">
+        <a href="~/ReporteCompraProductos/pdfCompraProductosGeneral" class="btn-primary btn media-right disabled" id="btnImprimir">
+            <span class="glyphicon glyphicon-print">
 
-                </span>
-            </div>
+            </span>
         </a>
     </div>
 </div>
