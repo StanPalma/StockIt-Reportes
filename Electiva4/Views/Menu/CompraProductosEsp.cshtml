@@ -1,9 +1,23 @@
 ﻿
 @{
     ViewBag.Title = "Clientes";
+    List<SelectListItem> categorias = (List<SelectListItem>)ViewBag.categorias;
+    List<SelectListItem> estado = (List<SelectListItem>)ViewBag.estado;
 }
 
 <h2>Clientes</h2>
+
+<div class="col-lg-6">
+    <label>Categoria</label>
+    @Html.DropDownList("categorias", categorias, "Seleccione categorias", new { @class = "form-control" })
+    <br />
+</div>
+
+<div class="col-lg-6">
+    <label>Estado</label>
+    @Html.DropDownList("estado", estado, "Seleccione estado", new { @class = "form-control" })
+    <br />
+</div>
 
 <table class="table table-bordered">
     <tr>

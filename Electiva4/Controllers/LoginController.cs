@@ -36,7 +36,7 @@ namespace Electiva4.Controllers
             {
                 //Creamos las sesiones si el usuario ingresó los datos correctamente
                 Session["UserCorreo"] = eUsuario.Correo;
-                Session["UserNombre"] = eUsuario.Correo;
+                Session["UserId"] = r.ToString();
             }
 
             return Json(r.ToString());
@@ -48,7 +48,7 @@ namespace Electiva4.Controllers
             {
                 //Limpiamos las sesiones
                 Session["UserCorreo"] = null;
-                Session["UserNombre"] = null;
+                Session["UserId"] = null;
                 return Redirect("~/Login/Login");
             }
             else

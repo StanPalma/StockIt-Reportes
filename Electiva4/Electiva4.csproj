@@ -137,6 +137,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Logica\LProductos.cs" />
+    <Compile Include="Logica\LUtils.cs" />
     <Compile Include="Models\ECategoria.cs" />
     <Compile Include="Models\ECliente.cs" />
     <Compile Include="Models\EDetalleCompraProductos.cs" />
@@ -217,8 +219,8 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Menu\Index.cshtml" />
-    <Content Include="Views\Menu\Productos.cshtml" />
-    <Content Include="Views\Menu\Clientes.cshtml" />
+    <Content Include="Views\Menu\CompraProductos.cshtml" />
+    <Content Include="Views\Menu\CompraProductosEsp.cshtml" />
     <Content Include="Views\Menu\Reservas.cshtml" />
     <Content Include="Views\Menu\Ventas.cshtml" />
     <Content Include="Views\ReporteCompraProductos\ReporteCompraProductos.cshtml" />

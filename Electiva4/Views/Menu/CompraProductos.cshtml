@@ -1,0 +1,126 @@
+﻿@model List<Electiva4.Models.EReporteProductosEncabezado>
+
+@{
+    ViewBag.Title = "Reporte de Compra de Productos";
+}
+
+<script type="text/javascript"
+        src="~/Scripts/jquery-3.4.1.min.js">
+</script>
+
+<script>
+
+    //Función para btnFiltrar
+    $(function () {
+        $("#btnFiltrar").click(function () {
+
+            var url = "@Url.Action("LlenarTableCP", "Menu")";
+            var fechaInicio = $("#dtpFechaInicio").val();
+            var fechaFinal = $("#dtpFechaFinal").val();
+            var data = { fechaInicioP: fechaInicio, fechaFinalP: fechaFinal };
+
+        $.post(url, data).done(function (data) {
+
+            document.getElementById("tableDatos").innerHTML =
+                "<tr>" +
+                "<th> ID </th>" +
+                "<th>#</th>" +
+                "<th>PROVEEDOR</th>" +
+                "<th>FECHA COMPRA</th>" +
+                "<th>MONTO</th>" +
+                "</tr >";
+
+            for (var i = 0; i < data.length; i++) {
+
+                var dateString = data[i].FechaIngreso.toString().substr(6);
+                var currentTime = new Date(parseInt(dateString));
+                var month = currentTime.getMonth() + 1;
+                var day = currentTime.getDate();
+                var year = currentTime.getFullYear();
+                var date = day + "-" + month + "-" + year;
+
+                document.getElementById("tableDatos").innerHTML +=
+                    "<tr>" +
+                    "<th>" + data[i].IdEncCompraProductos + "</th>" +
+                    "<th>" + (i + 1).toString() + "</th>" +
+                    "<th>" + data[i].NombreProveedor + "</th>" +
+                "<th>" + date + "</th>" +
+                "<th>$" + data[i].Monto.toFixed(2) + "</th>" +
+                    "</tr >";
+                }
+            });
+        });
+    });
+
+    //Función para btnLimpiar
+    $(function () {
+        $("#btnLimpiar").click(function () {
+
+            $("#dtpFechaInicio").val(null);
+            $("#dtpFechaFinal").val(null);
+
+            document.getElementById("tableDatos").innerHTML =
+                "<tr>" +
+                "<th> ID </th>" +
+                "<th>#</th>" +
+                "<th>PROVEEDOR</th>" +
+                "<th>FECHA COMPRA</th>" +
+                "<th>MONTO</th>" +
+                "</tr >";
+        });
+    });
+</script>
+
+<div class="text-center">
+    <h2><b>Reporte de Compra de Productos</b></h2>
+</div>
+
+<div class="col-lg-12">
+    <br />
+</div>
+
+<div class="col-lg-6">
+    <label>Fecha inicio</label>
+    <input class="form-control" id="dtpFechaInicio" type="date"/>
+    <br />
+</div>
+
+<div class="col-lg-6">
+    <label>Fecha final</label>
+    <input class="form-control" id="dtpFechaFinal" type="date" />
+    <br />
+</div>
+
+<div class="col-lg-12">
+    <div class="col-lg-1">
+        <input class="btn-success btn" id="btnFiltrar" type="button" value="Filtrar" />
+    </div>
+    <div class="col-lg-1">
+        <input class="btn-danger btn" id="btnLimpiar" type="button" value="Limpiar" />
+    </div>
+    <div class="col-lg-1">
+        <a href="~/ReporteCompraProductos/pdfCompraProductosGeneral">
+            <div class="btn-primary btn media-right">
+                <span class="glyphicon glyphicon-print">
+
+                </span>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="col-lg-12">
+    <br />
+</div>
+
+<table class="table table-bordered" id="tableDatos">
+    <tr>
+        <th>ID</th>
+        <th>#</th>
+        <th>PROVEEDOR</th>
+        <th>FECHA COMPRA</th>
+        <th>MONTO</th>
+    </tr>
+</table>
+
+
