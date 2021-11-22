@@ -30,6 +30,12 @@ namespace Electiva4.Controllers
         }
 
         #region Métodos para CompraProductos
+
+        List<EReporteProductosEncabezado> eReporteProductosEncabezadoList = new List<EReporteProductosEncabezado>();
+        List<EReporteProductosDetalle> eReporteProductosDetalleList = new List<EReporteProductosDetalle>();
+        EReporteProductosEncabezado eReporteProductosEncabezado;
+        int idEncabezadoCompraProductos = 0;
+
         public ActionResult CompraProductos()
         {
             if (Session["UserCorreo"] != null)
@@ -45,37 +51,71 @@ namespace Electiva4.Controllers
 
         public JsonResult LlenarTableCP(string fechaInicioP, string fechaFinalP)
         {
-            List<EReporteProductosEncabezado> eReporteProductosEncabezadoList = new List<EReporteProductosEncabezado>();
-
             if (Session["UserId"] != null)
             {
                 idUsuario = int.Parse(Session["UserId"].ToString());
+
+                if (idUsuario > 0)
+                {
+                    DateTime fechaInicio = DateTime.Parse(new LUtils().fechaHoraActual()).Date;
+                    DateTime fechaFinal = DateTime.Parse(new LUtils().fechaHoraActual()).Date;
+
+                    if ((fechaInicioP != "" && fechaFinalP != ""))
+                    {
+                        fechaInicio = DateTime.Parse(fechaInicioP).Date;
+                        fechaFinal = DateTime.Parse(fechaFinalP).Date;
+                    }
+
+                    eReporteProductosEncabezadoList = new LProductos().EncabezadosReporteCompraProductos(fechaInicio, fechaFinal, idUsuario);
+                }
+                else
+                {
+                    //Agregar un objeto
+                    Redirect("~/Login/Login");
+                }
             }
             else
             {
                 idUsuario = 0;
-            }
-            
-            if (idUsuario > 0)
-            {
-                DateTime fechaInicio = DateTime.Parse(new LUtils().fechaHoraActual()).Date;
-                DateTime fechaFinal = DateTime.Parse(new LUtils().fechaHoraActual()).Date;
-
-                if ((fechaInicioP != "" && fechaFinalP != ""))
-                {
-                    fechaInicio = DateTime.Parse(fechaInicioP).Date;
-                    fechaFinal = DateTime.Parse(fechaFinalP).Date;
-                }
-
-                eReporteProductosEncabezadoList = new LProductos().EncabezadosReporteCompraProductos(fechaInicio, fechaFinal, idUsuario);
-            }
-            else
-            {
                 //Agregar un objeto
                 Redirect("~/Login/Login");
             }
 
             return Json(eReporteProductosEncabezadoList, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult LlenarTableCPD(string idEncabezado, string nomProveedor, string fechaCompra, string monto)
+        {
+            if (Session["UserId"] != null)
+            {
+                idUsuario = int.Parse(Session["UserId"].ToString());
+
+                if (idUsuario > 0)
+                {
+                    idEncabezadoCompraProductos = int.Parse(idEncabezado);
+
+                    //Obtenemos los datos para el encabezado de la compra
+                    eReporteProductosEncabezado = new EReporteProductosEncabezado();
+                    eReporteProductosEncabezado.NombreProveedor = nomProveedor;
+                    eReporteProductosEncabezado.FechaIngreso = DateTime.Parse(fechaCompra);
+                    eReporteProductosEncabezado.Monto = Double.Parse(monto.Replace("$", ""));
+
+                    eReporteProductosDetalleList = new LProductos().DetalleReporteCompraProductos(idEncabezadoCompraProductos);
+                }
+                else
+                {
+                    //Agregar un objeto
+                    Redirect("~/Login/Login");
+                }
+            }
+            else
+            {
+                idUsuario = 0;
+                //Agregar un objeto
+                Redirect("~/Login/Login");
+            }
+
+            return Json(eReporteProductosDetalleList, JsonRequestBehavior.AllowGet);
         }
         #endregion
 

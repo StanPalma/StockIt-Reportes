@@ -1,6 +1,4 @@
-﻿@model List<Electiva4.Models.EReporteProductosEncabezado>
-
-@{
+﻿@{
     ViewBag.Title = "Reporte de Compra de Productos";
 }
 
@@ -10,9 +8,64 @@
 
 <script>
 
+    var opcionSeleccionada = 0;// 1 - Encabezado, 2 - Detalle
+
+    //Función para cargar el DetalleCompra
+    $(document).ready(function () {
+
+        // code to read selected table row cell data (values).
+        $("#tableDatos").on('click', '.btnSelect', function () {
+            // get the current row
+            var currentRow = $(this).closest("tr");
+
+            var idEncabezado = currentRow.find("td:eq(0)").html();
+            var nomProveedor = currentRow.find("td:eq(2)").html();
+            var fechaCompra = currentRow.find("td:eq(3)").html();
+            var monto = currentRow.find("td:eq(4)").html();
+
+            //Llamar el detalle compra
+            var url = "@Url.Action("LlenarTableCPD", "Menu")";
+            var data = { idEncabezado: idEncabezado, nomProveedor: nomProveedor, fechaCompra: fechaCompra, monto: monto };
+
+        $.post(url, data).done(function (data) {
+
+            document.getElementById("tableDatos").innerHTML =
+                "<tr>" +
+            "<th style='display: none;'>ID</th>" +
+            "<th>#</th>" +
+            "<th>PRODUCTO</th>" +
+            "<th>CANTIDAD</th>" +
+            "<th>PRECIO LOTE</th>" +
+            "<th>PRECIO UNITARIO (COMPRA)</th>" +
+            "<th>PRECIO UNITARIO (VENTA)</th>" +
+                "</tr >";
+
+            for (var i = 0; i < data.length; i++) {
+
+                document.getElementById("tableDatos").innerHTML +=
+                    "<tr>" +
+                "<td style='display: none;'>" + data[i].IdEncCompraProductos + "</td>" +
+                "<td class='btnSelect'>" + (i + 1).toString() + "</td>" +
+                "<td>" + data[i].NombreProducto + "</td>" +
+                "<td>" + data[i].Cantidad + "</th>" +
+                "<td>$" + data[i].PrecioLote.toFixed(2) + "</td>" +
+                "<td>$" + data[i].PrecioUnitario.toFixed(2) + "</td>" +
+                "<td>$" + data[i].PrecioVenta.toFixed(2) + "</td>" +
+                    "</tr >";
+            }
+
+            $("#btnLimpiar").val('Volver');
+            $("#dtpFechaInicio").prop('disabled', true);
+            $("#dtpFechaFinal").prop('disabled', true);
+            opcionSeleccionada = 2;
+
+            });
+        });
+    });
+
     //Función para btnFiltrar
-    $(function () {
-        $("#btnFiltrar").click(function () {
+    function filtrar() {
+        $(function () {
 
             var url = "@Url.Action("LlenarTableCP", "Menu")";
             var fechaInicio = $("#dtpFechaInicio").val();
@@ -23,7 +76,7 @@
 
             document.getElementById("tableDatos").innerHTML =
                 "<tr>" +
-                "<th> ID </th>" +
+                "<th style='display: none;'>ID</th>" +
                 "<th>#</th>" +
                 "<th>PROVEEDOR</th>" +
                 "<th>FECHA COMPRA</th>" +
@@ -41,34 +94,43 @@
 
                 document.getElementById("tableDatos").innerHTML +=
                     "<tr>" +
-                    "<th>" + data[i].IdEncCompraProductos + "</th>" +
-                    "<th>" + (i + 1).toString() + "</th>" +
-                    "<th>" + data[i].NombreProveedor + "</th>" +
-                "<th>" + date + "</th>" +
-                "<th>$" + data[i].Monto.toFixed(2) + "</th>" +
+                    "<td style='display: none;'>" + data[i].IdEncCompraProductos + "</td>" +
+                    "<td class='btnSelect'><a>" + (i + 1).toString() + "</a></td>" +
+                    "<td>" + data[i].NombreProveedor + "</td>" +
+                    "<td>" + date + "</th>" +
+                    "<td>$" + data[i].Monto.toFixed(2) + "</td>" +
                     "</tr >";
-                }
+            }
+
+            opcionSeleccionada = 1;
+
             });
         });
-    });
+    }
 
     //Función para btnLimpiar
-    $(function () {
-        $("#btnLimpiar").click(function () {
+    function limpiar() {
+        $(function () {
+            if (opcionSeleccionada == 1) {
+                $("#dtpFechaInicio").val(null);
+                $("#dtpFechaFinal").val(null);
 
-            $("#dtpFechaInicio").val(null);
-            $("#dtpFechaFinal").val(null);
-
-            document.getElementById("tableDatos").innerHTML =
-                "<tr>" +
-                "<th> ID </th>" +
-                "<th>#</th>" +
-                "<th>PROVEEDOR</th>" +
-                "<th>FECHA COMPRA</th>" +
-                "<th>MONTO</th>" +
-                "</tr >";
+                document.getElementById("tableDatos").innerHTML =
+                    "<tr>" +
+                    "<th style='display: none;'>ID</th>" +
+                    "<th>#</th>" +
+                    "<th>PROVEEDOR</th>" +
+                    "<th>FECHA COMPRA</th>" +
+                    "<th>MONTO</th>" +
+                    "</tr >";
+            } else if (opcionSeleccionada == 2) {
+                $("#btnLimpiar").val('Limpiar');
+                $("#dtpFechaInicio").prop('disabled', false);
+                $("#dtpFechaFinal").prop('disabled', false);
+                filtrar();
+            }
         });
-    });
+    }
 </script>
 
 <div class="text-center">
@@ -81,7 +143,7 @@
 
 <div class="col-lg-6">
     <label>Fecha inicio</label>
-    <input class="form-control" id="dtpFechaInicio" type="date"/>
+    <input class="form-control" id="dtpFechaInicio" type="date" />
     <br />
 </div>
 
@@ -93,10 +155,10 @@
 
 <div class="col-lg-12">
     <div class="col-lg-1">
-        <input class="btn-success btn" id="btnFiltrar" type="button" value="Filtrar" />
+        <input class="btn-success btn" id="btnFiltrar" onclick="filtrar();" type="button" value="Filtrar" />
     </div>
     <div class="col-lg-1">
-        <input class="btn-danger btn" id="btnLimpiar" type="button" value="Limpiar" />
+        <input class="btn-danger btn" id="btnLimpiar" onclick="limpiar();" type="button" value="Limpiar" />
     </div>
     <div class="col-lg-1">
         <a href="~/ReporteCompraProductos/pdfCompraProductosGeneral">
@@ -115,7 +177,7 @@
 
 <table class="table table-bordered" id="tableDatos">
     <tr>
-        <th>ID</th>
+        <th style="display:none;">ID</th>
         <th>#</th>
         <th>PROVEEDOR</th>
         <th>FECHA COMPRA</th>
