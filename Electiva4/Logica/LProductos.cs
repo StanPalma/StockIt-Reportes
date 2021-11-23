@@ -139,5 +139,28 @@ namespace Electiva4.Logica
                 return new DataTable();
             }
         }
+
+        public List<EProducto> ListSeleccionarProductosByIdUsuarioFechasAndIdCategoriaForReportePE(int idUsuario, DateTime fechaInicio, DateTime fechaFinal, int idCategoria)
+        {
+            List<EProducto> lista = new List<EProducto>();
+            try
+            {
+                DataSet ds = WS.seleccionarProductosByIdUsuarioFechasAndIdCategoriaForReportePE(idUsuario, fechaInicio, fechaFinal, idCategoria);
+
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    EProducto eProducto = new EProducto();
+                    eProducto.IdProducto = int.Parse(row["ID_PRODUCTO"].ToString());
+                    eProducto.NombreProducto = row["NOMBRE_PRODUCTO"].ToString();
+                    lista.Add(eProducto);
+                }
+
+                return lista;
+            }
+            catch (Exception)
+            {
+                return lista;
+            }
+        }
     }
 }

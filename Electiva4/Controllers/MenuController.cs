@@ -3,6 +3,7 @@ using Electiva4.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -63,8 +64,6 @@ namespace Electiva4.Controllers
                         fechaInicio = DateTime.Parse(fechaInicioP).Date;
                         fechaFinal = DateTime.Parse(fechaFinalP).Date;
                     }
-
-                    
 
                     fechaInicioCadena = fechaInicio.ToString("dd-MM-yyyy");
                     fechaFinalCadena = fechaFinal.ToString("dd-MM-yyyy");
@@ -170,23 +169,110 @@ namespace Electiva4.Controllers
 
         #endregion
 
+        #region Métodos para CompraProductosEsp
         public ActionResult CompraProductosEsp()
         {
-            List<SelectListItem> categorias = new List<SelectListItem>();
-            categorias.Add(new SelectListItem() { Text = "categorias 1", Value = "1" });
-            categorias.Add(new SelectListItem() { Text = "categorias 2", Value = "2" });
-            categorias.Add(new SelectListItem() { Text = "categorias 3", Value = "3" });
-
-            List<SelectListItem> estado = new List<SelectListItem>();
-            estado.Add(new SelectListItem() { Text = "estado 1", Value = "1" });
-            estado.Add(new SelectListItem() { Text = "estado 2", Value = "2" });
-            estado.Add(new SelectListItem() { Text = "estado 3", Value = "3" });
-
-            // Enviar lista a ViewBag para recibir en la Vista
-            ViewBag.categorias = categorias;
-            ViewBag.estado = estado;
-            return View();
+            if (Session["UserCorreo"] != null)
+            {
+                return View();
+            }
+            else
+            {
+                idUsuario = 0;
+                return Redirect("~/Login/Login");
+            }
         }
+
+        public JsonResult LlenarDDLCategorias(string fechaInicioP, string fechaFinalP)
+        {
+            List<ECategoria> categoriasList = new List<ECategoria>();
+            if (Session["UserId"] != null)
+            {
+                idUsuario = int.Parse(Session["UserId"].ToString());
+
+                if ((fechaInicioP != "" && fechaFinalP != ""))
+                {
+                    DateTime fechaInicio = DateTime.Parse(fechaInicioP).Date;
+                    DateTime fechaFinal = DateTime.Parse(fechaFinalP).Date;
+
+                    categoriasList = new LCategorias().ListSeleccionarCategoriasActivasByIdUsuarioAndFechasForReportePE(idUsuario, fechaInicio, fechaFinal);
+                }
+            }
+
+            return Json(categoriasList, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult LlenarDDLProductos(string fechaInicioP, string fechaFinalP, string idCategoriaP)
+        {
+            List<EProducto> productosList = new List<EProducto>();
+            if (Session["UserId"] != null)
+            {
+                idUsuario = int.Parse(Session["UserId"].ToString());
+                int idCategoria = int.Parse(idCategoriaP);
+
+                if ((fechaInicioP != "" && fechaFinalP != ""))
+                {
+                    DateTime fechaInicio = DateTime.Parse(fechaInicioP).Date;
+                    DateTime fechaFinal = DateTime.Parse(fechaFinalP).Date;
+
+                    productosList = new LProductos().ListSeleccionarProductosByIdUsuarioFechasAndIdCategoriaForReportePE(idUsuario, fechaInicio, fechaFinal, idCategoria);
+                }
+            }
+
+            return Json(productosList, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult LlenarTableCPE(string idProductoP, string fechaInicioP, string fechaFinalP, string idCategoriaP)
+        {
+            List<EReporteProductosDetalle> eReporteProductosDetalleList = new List<EReporteProductosDetalle>();
+            if (Session["UserId"] != null)
+            {
+                idUsuario = int.Parse(Session["UserId"].ToString());
+
+                if (idUsuario > 0)
+                {
+                    DateTime fechaInicio = DateTime.Parse(new LUtils().fechaHoraActual()).Date;
+                    DateTime fechaFinal = DateTime.Parse(new LUtils().fechaHoraActual()).Date;
+
+                    if ((fechaInicioP != "" && fechaFinalP != ""))
+                    {
+                        fechaInicio = DateTime.Parse(fechaInicioP).Date;
+                        fechaFinal = DateTime.Parse(fechaFinalP).Date;
+                    }
+
+                    int idProducto = idProductoP != null && idProductoP != "" ? int.Parse(idProductoP) : 0;
+                    fechaInicioCadena = fechaInicio.ToString("dd-MM-yyyy");
+                    fechaFinalCadena = fechaFinal.ToString("dd-MM-yyyy");
+                    int idCategoria = idCategoriaP != null && idCategoriaP != "" ? int.Parse(idCategoriaP) : 0;
+
+                    eReporteProductosDetalleList = new LProductos().DetalleReporteCompraProductosFiltros(idProducto, fechaInicio, fechaFinal, idCategoria, idUsuario);
+
+                    //Guardamos los datos en las variables de sesión que serán utilizadas para imprimir el reporte
+                    Session["IdProducto"] = idProductoP;
+                    Session["FechaInicio"] = fechaInicioCadena;
+                    Session["FechaFinal"] = fechaFinalCadena;
+                    Session["IdProducto"] = idCategoriaP;
+                    Session["DatosDetalleList"] = eReporteProductosDetalleList;
+                }
+                else
+                {
+                    //Agregar un objeto
+                    Redirect("~/Login/Login");
+                }
+            }
+            else
+            {
+                fechaInicioCadena = "";
+                fechaFinalCadena = "";
+                idUsuario = 0;
+                //Agregar un objeto
+                Redirect("~/Login/Login");
+            }
+
+            return Json(eReporteProductosDetalleList, JsonRequestBehavior.AllowGet);
+        }
+
+        #endregion
 
         public ActionResult Reservas()
         {
