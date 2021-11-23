@@ -8,6 +8,7 @@
 
 <script>
 
+    var listaDatos = "";//Variable para almacenar los datos consultados
     var opcionSeleccionada = 0;// 1 - Encabezado, 2 - Detalle
 
     //Función para cuando cambie Fecha Inicio o Fecha Final
@@ -35,7 +36,10 @@
             var url = "@Url.Action("LlenarTableCPD", "Menu")";
             var data = { idEncabezado: idEncabezado, nomProveedor: nomProveedor, fechaCompra: fechaCompra, monto: monto };
 
-        $.post(url, data).done(function (data) {
+            $.post(url, data).done(function (data) {
+
+                //Guardamos los datos para enviar al método que genera el reporte
+                listaDatos = data;
 
             document.getElementById("tableDatos").innerHTML =
                 "<tr>" +
@@ -86,6 +90,9 @@
             var data = { fechaInicioP: fechaInicio, fechaFinalP: fechaFinal };
 
         $.post(url, data).done(function (data) {
+
+            //Guardamos los datos para enviar al método que genera el reporte
+            listaDatos = data;
 
             document.getElementById("tableDatos").innerHTML =
                 "<tr>" +
@@ -150,6 +157,12 @@
             }
         });
     }
+
+    //Función para btnLimpiar
+    function imprimir() {
+        //Invocamos la URL para imprimir el reporte
+        window.location.href = "/Menu/ImprimirRCP";
+    }
 </script>
 
 <div class="text-center">
@@ -180,11 +193,11 @@
         <input class="btn-danger btn" id="btnLimpiar" onclick="limpiar();" type="button" value="Limpiar" />
     </div>
     <div class="col-lg-1">
-        <a href="~/ReporteCompraProductos/pdfCompraProductosGeneral" class="btn-primary btn media-right disabled" id="btnImprimir">
+        <div onclick="imprimir();" class="btn-primary btn media-right disabled" id="btnImprimir">
             <span class="glyphicon glyphicon-print">
 
             </span>
-        </a>
+        </div>
     </div>
 </div>
 

@@ -1,5 +1,6 @@
 ﻿using Electiva4.Logica;
 using Electiva4.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace Electiva4.Controllers
         // GET: Menu
         WSStockIt.WebServiceSI WS = new WSStockIt.WebServiceSI();
         int idUsuario = 0;
+        string fechaInicioCadena = "";
+        string fechaFinalCadena = "";
 
         public ActionResult Index()
         {
@@ -30,12 +33,6 @@ namespace Electiva4.Controllers
         }
 
         #region Métodos para CompraProductos
-
-        List<EReporteProductosEncabezado> eReporteProductosEncabezadoList = new List<EReporteProductosEncabezado>();
-        List<EReporteProductosDetalle> eReporteProductosDetalleList = new List<EReporteProductosDetalle>();
-        EReporteProductosEncabezado eReporteProductosEncabezado;
-        int idEncabezadoCompraProductos = 0;
-
         public ActionResult CompraProductos()
         {
             if (Session["UserCorreo"] != null)
@@ -51,6 +48,7 @@ namespace Electiva4.Controllers
 
         public JsonResult LlenarTableCP(string fechaInicioP, string fechaFinalP)
         {
+            List<EReporteProductosEncabezado> eReporteProductosEncabezadoList = new List<EReporteProductosEncabezado>();
             if (Session["UserId"] != null)
             {
                 idUsuario = int.Parse(Session["UserId"].ToString());
@@ -66,7 +64,17 @@ namespace Electiva4.Controllers
                         fechaFinal = DateTime.Parse(fechaFinalP).Date;
                     }
 
+                    
+
+                    fechaInicioCadena = fechaInicio.ToString("dd-MM-yyyy");
+                    fechaFinalCadena = fechaFinal.ToString("dd-MM-yyyy");
+
                     eReporteProductosEncabezadoList = new LProductos().EncabezadosReporteCompraProductos(fechaInicio, fechaFinal, idUsuario);
+
+                    //Guardamos los datos en las variables de sesión que serán utilizadas para imprimir el reporte
+                    Session["FechaInicio"] = fechaInicioCadena;
+                    Session["FechaFinal"] = fechaFinalCadena;
+                    Session["DatosEncabezadoList"] = eReporteProductosEncabezadoList;
                 }
                 else
                 {
@@ -76,6 +84,8 @@ namespace Electiva4.Controllers
             }
             else
             {
+                fechaInicioCadena = "";
+                fechaFinalCadena = "";
                 idUsuario = 0;
                 //Agregar un objeto
                 Redirect("~/Login/Login");
@@ -86,21 +96,26 @@ namespace Electiva4.Controllers
 
         public JsonResult LlenarTableCPD(string idEncabezado, string nomProveedor, string fechaCompra, string monto)
         {
+            List<EReporteProductosDetalle> eReporteProductosDetalleList = new List<EReporteProductosDetalle>();
             if (Session["UserId"] != null)
             {
                 idUsuario = int.Parse(Session["UserId"].ToString());
 
                 if (idUsuario > 0)
                 {
-                    idEncabezadoCompraProductos = int.Parse(idEncabezado);
+                    int idEncabezadoCompraProductos = int.Parse(idEncabezado);
 
                     //Obtenemos los datos para el encabezado de la compra
-                    eReporteProductosEncabezado = new EReporteProductosEncabezado();
+                    EReporteProductosEncabezado eReporteProductosEncabezado = new EReporteProductosEncabezado();
                     eReporteProductosEncabezado.NombreProveedor = nomProveedor;
                     eReporteProductosEncabezado.FechaIngreso = DateTime.Parse(fechaCompra);
                     eReporteProductosEncabezado.Monto = Double.Parse(monto.Replace("$", ""));
 
                     eReporteProductosDetalleList = new LProductos().DetalleReporteCompraProductos(idEncabezadoCompraProductos);
+
+                    Session["IdEncabezado"] = idEncabezadoCompraProductos;
+                    Session["DatosEncabezado"] = eReporteProductosEncabezado;
+                    Session["DatosDetalleList"] = eReporteProductosDetalleList;
                 }
                 else
                 {
@@ -117,6 +132,42 @@ namespace Electiva4.Controllers
 
             return Json(eReporteProductosDetalleList, JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult ImprimirRCP()
+        {
+            try
+            {
+                ReporteCompraProductosController reporteCompraProductosController = new ReporteCompraProductosController();
+
+                int idEncabezadoCompraProductos = Session["IdEncabezado"] != null && Session["IdEncabezado"].ToString() != ""
+                    ? int.Parse(Session["IdEncabezado"].ToString())
+                    : 0;
+
+                List<EReporteProductosEncabezado> eReporteProductosEncabezadoList = Session["DatosEncabezadoList"] != null 
+                    ? Session["DatosEncabezadoList"] as List<EReporteProductosEncabezado>
+                    : new List<EReporteProductosEncabezado>();
+
+                List<EReporteProductosDetalle> eReporteProductosDetalleList = Session["DatosDetalleList"] != null 
+                    ? Session["DatosDetalleList"] as List<EReporteProductosDetalle>
+                    : new List<EReporteProductosDetalle>();
+
+                EReporteProductosEncabezado eReporteProductosEncabezado = Session["DatosEncabezado"] != null 
+                    ? Session["DatosEncabezado"] as EReporteProductosEncabezado
+                    : new EReporteProductosEncabezado();
+                string fechaInicio = Session["FechaInicio"] != null ? Session["FechaInicio"].ToString() : "00-00-0000";
+                string fechaFinal = Session["FechaFinal"] != null ? Session["FechaFinal"].ToString() : "00-00-0000";
+
+
+                return reporteCompraProductosController.generarReporte(idEncabezadoCompraProductos, eReporteProductosEncabezadoList, eReporteProductosDetalleList, eReporteProductosEncabezado, 
+                    fechaInicio, fechaFinal, Session["UserCorreo"].ToString(), this.Response, this.Server);
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+        }
+
         #endregion
 
         public ActionResult CompraProductosEsp()

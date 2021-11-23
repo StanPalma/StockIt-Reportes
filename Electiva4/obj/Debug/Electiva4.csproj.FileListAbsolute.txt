@@ -86,4 +86,6 @@ C:\Users\Alejandro R\Documents\UTEC\Ciclo 02-2021\Normas y Estándares Internaci
 C:\Users\Alejandro R\Documents\UTEC\Ciclo 02-2021\Normas y Estándares Internacionales\StockIt-Reportes\Electiva4\obj\Debug\Electiva4.csproj.CopyComplete
 C:\Users\Alejandro R\Documents\UTEC\Ciclo 02-2021\Normas y Estándares Internacionales\StockIt-Reportes\Electiva4\obj\Debug\Electiva4.dll
 C:\Users\Alejandro R\Documents\UTEC\Ciclo 02-2021\Normas y Estándares Internacionales\StockIt-Reportes\Electiva4\obj\Debug\Electiva4.pdb
+C:\Users\Alejandro R\Documents\UTEC\Ciclo 02-2021\Normas y Estándares Internacionales\StockIt-Reportes\Electiva4\bin\Resources\logoStockIt.jpg
+C:\Users\Alejandro R\Documents\UTEC\Ciclo 02-2021\Normas y Estándares Internacionales\StockIt-Reportes\Electiva4\bin\images\logoStockIt.jpg
 C:\Users\Alejandro R\Documents\UTEC\Ciclo 02-2021\Normas y Estándares Internacionales\StockIt-Reportes\Electiva4\obj\Debug\Electiva4.csproj.AssemblyReference.cache
