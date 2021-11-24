@@ -418,28 +418,31 @@ namespace Electiva4.Controllers
             return Json(eReporteReservasEncabezadoList, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult LlenarTableRD(string idEncabezado, string nomProveedor, string fechaCompra, string monto)
+        public JsonResult LlenarTableRD(string idEncabezadoP, string nombreClienteP, string telefonoClienteP, string fechaReservaP, string fechaPEntregaP, string montoP, 
+            string estadoReservaP)
         {
-            List<EReporteProductosDetalle> eReporteProductosDetalleList = new List<EReporteProductosDetalle>();
+            List<EReporteReservasDetalle> eReporteReservasDetalleList = new List<EReporteReservasDetalle>();
             if (Session["UserId"] != null)
             {
                 idUsuario = int.Parse(Session["UserId"].ToString());
 
                 if (idUsuario > 0)
                 {
-                    int idEncabezadoCompraProductos = int.Parse(idEncabezado);
+                    int idEncabezado = int.Parse(idEncabezadoP);
 
                     //Obtenemos los datos para el encabezado de la compra
-                    EReporteProductosEncabezado eReporteProductosEncabezado = new EReporteProductosEncabezado();
-                    eReporteProductosEncabezado.NombreProveedor = nomProveedor;
-                    eReporteProductosEncabezado.FechaIngreso = DateTime.Parse(fechaCompra);
-                    eReporteProductosEncabezado.Monto = Double.Parse(monto.Replace("$", ""));
+                    EReporteReservasEncabezado eReporteReservasEncabezado = new EReporteReservasEncabezado();
+                    eReporteReservasEncabezado.NombreCliente = nombreClienteP + " TEL.:" + telefonoClienteP;
+                    eReporteReservasEncabezado.FechaReserva = DateTime.Parse(fechaReservaP);
+                    eReporteReservasEncabezado.FechaPromesaEntrega = DateTime.Parse(fechaPEntregaP);
+                    eReporteReservasEncabezado.MontoEncabezadoReserva = Double.Parse(montoP.Replace("$", ""));
+                    eReporteReservasEncabezado.EstadoReserva = estadoReservaP;
 
-                    eReporteProductosDetalleList = new LProductos().DetalleReporteCompraProductos(idEncabezadoCompraProductos);
+                    eReporteReservasDetalleList = new LDetalleReservas().DetalleReporteReservas(idEncabezado);
 
-                    Session["IdEncabezado"] = idEncabezadoCompraProductos;
-                    Session["DatosEncabezado"] = eReporteProductosEncabezado;
-                    Session["DatosDetalleList"] = eReporteProductosDetalleList;
+                    Session["IdEncabezado"] = idEncabezado;
+                    Session["DatosEncabezado"] = eReporteReservasEncabezado;
+                    Session["DatosDetalleList"] = eReporteReservasDetalleList;
                 }
                 else
                 {
@@ -454,7 +457,7 @@ namespace Electiva4.Controllers
                 Redirect("~/Login/Login");
             }
 
-            return Json(eReporteProductosDetalleList, JsonRequestBehavior.AllowGet);
+            return Json(eReporteReservasDetalleList, JsonRequestBehavior.AllowGet);
         }
         #endregion
 

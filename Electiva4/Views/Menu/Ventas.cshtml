@@ -25,14 +25,6 @@
         });
     }
 
-    //Función para cuando cambie Fecha Inicio o Fecha Final
-    function cambioFecha() {
-        $(function () {
-            $("#btnImprimir").addClass('disabled');
-        });
-    }
-
-
     //Función para cargar el DetalleCompra
     $(document).ready(function () {
 
@@ -72,7 +64,7 @@
 
                     document.getElementById("tableDatos").innerHTML +=
                     "<tr>" +
-                    "<td class='btnSelect'>" + (i + 1).toString() + "</td>" +
+                    "<td>" + (i + 1).toString() + "</td>" +
                     "<td>" + data[i].NombreProducto + "</td>" +
                     "<td>" + data[i].Cantidad + "</th>" +
                     "<td>$" + data[i].Precio.toFixed(2) + "</td>" +

@@ -8,6 +8,8 @@
 </script>
 
 <script>
+    var opcionSeleccionada = 0;// 1 - Encabezado, 2 - Detalle
+
     //Variables para guardar los datos de estado e idCliente
     var estado = "";
     var nombreEstado = "TODOS";
@@ -60,6 +62,72 @@
         nombreCliente = sel.options[sel.selectedIndex].text;
         $("#btnImprimir").addClass('disabled');
     }
+
+    //Función para cargar el DetalleCompra
+    $(document).ready(function () {
+
+        $("#tableDatos").on('click', '.btnSelect', function () {
+
+            //Obtener la fila actual
+            var currentRow = $(this).closest("tr");
+
+            var idEncabezado = currentRow.find("td:eq(0)").html();
+            var nomCliente = currentRow.find("td:eq(2)").html();
+            var telCliente = currentRow.find("td:eq(3)").html();
+            var fechaReserva = currentRow.find("td:eq(4)").html();
+            var fechaPEntrega = currentRow.find("td:eq(5)").html();
+            var monto = currentRow.find("td:eq(6)").html();
+            var nomEstadoReservaV = currentRow.find("td:eq(7)").html();
+
+            //Llamar el detalle compra
+            var url = "@Url.Action("LlenarTableRD", "Menu")";
+            var data = {
+                idEncabezadoP: idEncabezado, nombreClienteP: nomCliente, telefonoClienteP: telCliente, fechaReservaP: fechaReserva, fechaPEntregaP: fechaPEntrega,
+                montoP: monto, estadoReservaP: nomEstadoReservaV
+            };
+
+            $.post(url, data).done(function (data) {
+
+                //Guardamos los datos para enviar al método que genera el reporte
+                listaDatos = data;
+
+                document.getElementById("tableDatos").innerHTML =
+                "<tr>" +
+                "<th>#</th>" +
+                "<th>PRODUCTO</th>" +
+                "<th>CANTIDAD</th>" +
+                "<th>PRECIO</th>" +
+                "<th>SUB TOTAL</th>" +
+                "</tr >";
+
+                for (var i = 0; i < data.length; i++) {
+
+                    document.getElementById("tableDatos").innerHTML +=
+                    "<tr>" +
+                    "<td>" + (i + 1).toString() + "</td>" +
+                    "<td>" + data[i].NombreProducto + "</td>" +
+                    "<td>" + data[i].Cantidad + "</th>" +
+                    "<td>$" + data[i].PrecioProducto.toFixed(2) + "</td>" +
+                    "<td>$" + data[i].Monto.toFixed(2) + "</td>" +
+                    "</tr >";
+                }
+
+                //Habilitamos el botón si la data es mayor a 0
+                if (data.length > 0) {
+                    $("#btnImprimir").removeClass('disabled');
+                }
+
+                $("#btnLimpiar").val('Volver');
+                $("#dtpFechaInicio").prop('disabled', true);
+                $("#dtpFechaFinal").prop('disabled', true);
+                $("#ddlClientes").attr('disabled', 'disabled');
+                $("#ddlEstados").attr('disabled', 'disabled');
+
+                opcionSeleccionada = 2;
+
+            });
+        });
+    });
 
     //Función para cuando cambie Fecha Inicio o Fecha Final
     function cambioFecha() {
@@ -129,8 +197,8 @@
 
                 document.getElementById("tableDatos").innerHTML +=
                 "<tr>" +
-                "<th style='display: none;'>" + data[i].IdEncabezadoReserva +"</th>" +
-                "<td>" + (i + 1).toString() + "</td>" +
+                "<td style='display: none;'>" + data[i].IdEncabezadoReserva +"</td>" +
+                "<td class='btnSelect'><a>" + (i + 1).toString() + "</a></td>" +
                 "<td>" + data[i].NombreCliente + " " + data[i].ApellidoCliente + "</td>" +
                 "<td>" + data[i].TelefonoCliente + "</td>" +
                 "<td>" + date + "</td>" +
@@ -145,6 +213,8 @@
                 $("#btnImprimir").removeClass('disabled');
             }
 
+            opcionSeleccionada = 1;
+
             });
         });
     }
@@ -153,28 +223,39 @@
     function limpiar() {
         $(function () {
 
-            document.getElementById("ddlClientes").innerHTML =
-                "<option value='0'>TODOS</option>";
-            idCliente = "0";
-            $("#dtpFechaInicio").val(null);
-            $("#dtpFechaFinal").val(null);
-            document.getElementById("ddlEstados").innerHTML =
-                "<option value='0'>TODOS</option>";
-            estado = "";
+            if (opcionSeleccionada == 1) {
+                
+                document.getElementById("ddlClientes").innerHTML =
+                    "<option value='0'>TODOS</option>";
+                idCliente = "0";
+                $("#dtpFechaInicio").val(null);
+                $("#dtpFechaFinal").val(null);
+                document.getElementById("ddlEstados").innerHTML =
+                    "<option value='0'>TODOS</option>";
+                estado = "";
 
-            $("#btnImprimir").addClass('disabled');
+                $("#btnImprimir").addClass('disabled');
 
-            document.getElementById("tableDatos").innerHTML =
-                "<tr>" +
-                "<th style='display: none;'>ID</th>" +
-                "<th>#</th>" +
-                "<th>CLIENTE</th>" +
-                "<th>TELÉFONO</th>" +
-                "<th>F. RESERVA</th>" +
-                "<th>F. PROMESA ENTREGA</th>" +
-                "<th>MONTO</th>" +
-                "<th>ESTADO</th>" +
-                "</tr >";
+                document.getElementById("tableDatos").innerHTML =
+                    "<tr>" +
+                    "<th style='display: none;'>ID</th>" +
+                    "<th>#</th>" +
+                    "<th>CLIENTE</th>" +
+                    "<th>TELÉFONO</th>" +
+                    "<th>F. RESERVA</th>" +
+                    "<th>F. PROMESA ENTREGA</th>" +
+                    "<th>MONTO</th>" +
+                    "<th>ESTADO</th>" +
+                    "</tr >";
+
+            } else if (opcionSeleccionada == 2) {
+                $("#btnLimpiar").val('Limpiar');
+                $("#dtpFechaInicio").prop('disabled', false);
+                $("#dtpFechaFinal").prop('disabled', false);
+                $("#ddlClientes").removeAttr('disabled');
+                $("#ddlEstados").removeAttr('disabled');
+                filtrar();
+            }
         });
     }
 
