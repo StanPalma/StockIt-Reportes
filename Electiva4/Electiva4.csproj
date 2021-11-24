@@ -141,7 +141,9 @@
     <Compile Include="Logica\LCategorias.cs" />
     <Compile Include="Logica\LClientes.cs" />
     <Compile Include="Logica\LDetalleFacturacion.cs" />
+    <Compile Include="Logica\LDetalleReservas.cs" />
     <Compile Include="Logica\LEncabezadoFacturacion.cs" />
+    <Compile Include="Logica\LEncabezadoReservas.cs" />
     <Compile Include="Logica\LProductos.cs" />
     <Compile Include="Logica\LUsuarios.cs" />
     <Compile Include="Logica\LUtils.cs" />
@@ -153,6 +155,7 @@
     <Compile Include="Models\EEncabezadoCompraProductos.cs" />
     <Compile Include="Models\EEncabezadoFacturacion.cs" />
     <Compile Include="Models\EEncabezadoReservas.cs" />
+    <Compile Include="Models\EEstadoReserva.cs" />
     <Compile Include="Models\EProducto.cs" />
     <Compile Include="Models\EProveedor.cs" />
     <Compile Include="Models\EReporteFacturacionDetalle.cs" />

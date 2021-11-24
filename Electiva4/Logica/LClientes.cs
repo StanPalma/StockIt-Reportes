@@ -32,5 +32,29 @@ namespace Electiva4.Logica
                 return lista;
             }
         }
+
+        public List<ECliente> SeleccionarClientesByIdUsuarioFechasAndEstadoReservaForReporte(int idUsuario, DateTime fechaInicio, DateTime fechaFinal,
+            string estadoReserva)
+        {
+            List<ECliente> lista = new List<ECliente>();
+            try
+            {
+                DataSet ds = WS.seleccionarClientesByIdUsuarioFechasAndEstadoReservaForReporte(idUsuario, fechaInicio, fechaFinal, estadoReserva);
+
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    ECliente eCliente = new ECliente();
+                    eCliente.IdCliente = int.Parse(row["ID_CLIENTE"].ToString());
+                    eCliente.NombreCliente = row["CLIENTE"].ToString();
+                    lista.Add(eCliente);
+                }
+
+                return lista;
+            }
+            catch (Exception)
+            {
+                return lista;
+            }
+        }
     }
 }

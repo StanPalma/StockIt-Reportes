@@ -319,7 +319,142 @@ namespace Electiva4.Controllers
         #region Métodos para Reservas
         public ActionResult Reservas()
         {
-            return View();
+            if (Session["UserCorreo"] != null)
+            {
+                return View();
+            }
+            else
+            {
+                idUsuario = 0;
+                return Redirect("~/Login/Login");
+            }
+        }
+
+        public JsonResult LlenarDDLEstadosR(string fechaInicioP, string fechaFinalP)
+        {
+            List<EEstadoReserva> estadosList = new List<EEstadoReserva>();
+            if (Session["UserId"] != null)
+            {
+                idUsuario = int.Parse(Session["UserId"].ToString());
+
+                if ((fechaInicioP != "" && fechaFinalP != ""))
+                {
+                    DateTime fechaInicio = DateTime.Parse(fechaInicioP).Date;
+                    DateTime fechaFinal = DateTime.Parse(fechaFinalP).Date;
+
+                    estadosList = new LDetalleReservas().ListSeleccionarEstadosReservaByIdUsuarioAndFechasForReporte(idUsuario, fechaInicio, fechaFinal);
+                }
+            }
+
+            return Json(estadosList, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult LlenarDDLClientesR(string fechaInicioP, string fechaFinalP, string estadoP)
+        {
+            List<ECliente> clientesList = new List<ECliente>();
+            if (Session["UserId"] != null)
+            {
+                idUsuario = int.Parse(Session["UserId"].ToString());
+
+                if ((fechaInicioP != "" && fechaFinalP != ""))
+                {
+                    DateTime fechaInicio = DateTime.Parse(fechaInicioP).Date;
+                    DateTime fechaFinal = DateTime.Parse(fechaFinalP).Date;
+
+                    clientesList = new LClientes().SeleccionarClientesByIdUsuarioFechasAndEstadoReservaForReporte(idUsuario, fechaInicio, fechaFinal, estadoP);
+                }
+            }
+
+            return Json(clientesList, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult LlenarTableRE(string fechaInicioP, string fechaFinalP, string estadoP, string idClienteP)
+        {
+            List<EReporteReservasEncabezado> eReporteReservasEncabezadoList = new List<EReporteReservasEncabezado>();
+            if (Session["UserId"] != null)
+            {
+                idUsuario = int.Parse(Session["UserId"].ToString());
+
+                if (idUsuario > 0)
+                {
+                    DateTime fechaInicio = DateTime.Parse(new LUtils().fechaHoraActual()).Date;
+                    DateTime fechaFinal = DateTime.Parse(new LUtils().fechaHoraActual()).Date;
+
+                    int idCliente = idClienteP != null && idClienteP != "" ? int.Parse(idClienteP) : 0;
+
+                    if ((fechaInicioP != "" && fechaFinalP != ""))
+                    {
+                        fechaInicio = DateTime.Parse(fechaInicioP).Date;
+                        fechaFinal = DateTime.Parse(fechaFinalP).Date;
+                    }
+
+                    fechaInicioCadena = fechaInicio.ToString("dd-MM-yyyy");
+                    fechaFinalCadena = fechaFinal.ToString("dd-MM-yyyy");
+
+                    eReporteReservasEncabezadoList = new LEncabezadoReservas().EncabezadosReporteReservas(fechaInicio, fechaFinal, idUsuario, estadoP, idCliente);
+
+                    //Guardamos los datos en las variables de sesión que serán utilizadas para imprimir el reporte
+                    Session["FechaInicio"] = fechaInicioCadena;
+                    Session["FechaFinal"] = fechaFinalCadena;
+                    Session["EstadoReserva"] = estadoP;
+                    Session["IdCliente"] = idClienteP;
+                    Session["DatosEncabezadoList"] = eReporteReservasEncabezadoList;
+                }
+                else
+                {
+                    //Agregar un objeto
+                    Redirect("~/Login/Login");
+                }
+            }
+            else
+            {
+                fechaInicioCadena = "";
+                fechaFinalCadena = "";
+                idUsuario = 0;
+                //Agregar un objeto
+                Redirect("~/Login/Login");
+            }
+
+            return Json(eReporteReservasEncabezadoList, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult LlenarTableRD(string idEncabezado, string nomProveedor, string fechaCompra, string monto)
+        {
+            List<EReporteProductosDetalle> eReporteProductosDetalleList = new List<EReporteProductosDetalle>();
+            if (Session["UserId"] != null)
+            {
+                idUsuario = int.Parse(Session["UserId"].ToString());
+
+                if (idUsuario > 0)
+                {
+                    int idEncabezadoCompraProductos = int.Parse(idEncabezado);
+
+                    //Obtenemos los datos para el encabezado de la compra
+                    EReporteProductosEncabezado eReporteProductosEncabezado = new EReporteProductosEncabezado();
+                    eReporteProductosEncabezado.NombreProveedor = nomProveedor;
+                    eReporteProductosEncabezado.FechaIngreso = DateTime.Parse(fechaCompra);
+                    eReporteProductosEncabezado.Monto = Double.Parse(monto.Replace("$", ""));
+
+                    eReporteProductosDetalleList = new LProductos().DetalleReporteCompraProductos(idEncabezadoCompraProductos);
+
+                    Session["IdEncabezado"] = idEncabezadoCompraProductos;
+                    Session["DatosEncabezado"] = eReporteProductosEncabezado;
+                    Session["DatosDetalleList"] = eReporteProductosDetalleList;
+                }
+                else
+                {
+                    //Agregar un objeto
+                    Redirect("~/Login/Login");
+                }
+            }
+            else
+            {
+                idUsuario = 0;
+                //Agregar un objeto
+                Redirect("~/Login/Login");
+            }
+
+            return Json(eReporteProductosDetalleList, JsonRequestBehavior.AllowGet);
         }
         #endregion
 
