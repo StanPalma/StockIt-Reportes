@@ -586,6 +586,46 @@ namespace Electiva4.Controllers
 
             return Json(eReporteFacturacionDetalleList, JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult ImprimirRVEsp()
+        {
+            try
+            {
+                ReporteCompraProductosEspController reporteCompraProductosEspController = new ReporteCompraProductosEspController();
+
+                int idCategoria = Session["IdCategoria"] != null && Session["IdCategoria"].ToString() != ""
+                    ? int.Parse(Session["IdCategoria"].ToString())
+                    : 0;
+
+                string nombreCategoria = Session["NomCategoria"] != null && Session["NomCategoria"].ToString() != ""
+                    ? Session["NomCategoria"].ToString()
+                    : "TODAS";
+
+                int idProducto = Session["IdProducto"] != null && Session["IdProducto"].ToString() != ""
+                    ? int.Parse(Session["IdProducto"].ToString())
+                    : 0;
+
+                string nombreProducto = Session["NomProducto"] != null && Session["NomProducto"].ToString() != ""
+                    ? Session["NomProducto"].ToString()
+                    : "TODOS";
+
+                List<EReporteProductosDetalle> eReporteProductosDetalleList = Session["DatosDetalleList"] != null
+                    ? Session["DatosDetalleList"] as List<EReporteProductosDetalle>
+                    : new List<EReporteProductosDetalle>();
+
+                string fechaInicio = Session["FechaInicio"] != null ? Session["FechaInicio"].ToString() : "00-00-0000";
+                string fechaFinal = Session["FechaFinal"] != null ? Session["FechaFinal"].ToString() : "00-00-0000";
+
+
+                return reporteCompraProductosEspController.generarReporte(idCategoria, idProducto, fechaInicio, fechaFinal, eReporteProductosDetalleList, nombreCategoria,
+                    nombreProducto, Session["UserCorreo"].ToString(), this.Response, this.Server);
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+        }
         #endregion
     }
 }

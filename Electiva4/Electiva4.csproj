@@ -134,6 +134,7 @@
     <Compile Include="Controllers\ReporteCompraProductosEspController.cs" />
     <Compile Include="Controllers\ReporteReservasController.cs" />
     <Compile Include="Controllers\ReporteVentasController.cs" />
+    <Compile Include="Controllers\ReporteVentasEspController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -217,6 +218,7 @@
       <LastGenOutput>Reference.cs</LastGenOutput>
     </Content>
     <Content Include="Views\Menu\VentasEsp.cshtml" />
+    <Content Include="Views\ReporteVentasEsp\ReporteVentasEsp.cshtml" />
     <None Include="Web References\WSStockIt\WebServiceSI.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
