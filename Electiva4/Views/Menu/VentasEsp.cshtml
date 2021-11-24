@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "VentasEsp";
+    ViewBag.Title = "Ventas Especificadas";
 }
 
 <script type="text/javascript"
@@ -18,10 +18,11 @@
     function llenarDDLProductos() {
         $(function () {
 
-            var url = "@Url.Action("LlenarDDLProductos", "Menu")";
+            var url = "@Url.Action("LlenarDDLProductosV", "Menu")";
             var fechaInicio = $("#dtpFechaInicio").val();
             var fechaFinal = $("#dtpFechaFinal").val();
             var data = { fechaInicioP: fechaInicio, fechaFinalP: fechaFinal, idCategoriaP: idCategoria };
+            idProducto = "0";
 
             $.post(url, data).done(function (data) {
 
@@ -68,7 +69,7 @@
         $(function () {
             $("#btnImprimir").addClass('disabled');
 
-            var url = "@Url.Action("LlenarDDLCategorias", "Menu")";
+            var url = "@Url.Action("LlenarDDLCategoriasV", "Menu")";
             var fechaInicio = $("#dtpFechaInicio").val();
             var fechaFinal = $("#dtpFechaFinal").val();
             var data = { fechaInicioP: fechaInicio, fechaFinalP: fechaFinal };
@@ -91,7 +92,7 @@
     function filtrar() {
         $(function () {
 
-            var url = "@Url.Action("LlenarTableCPE", "Menu")";
+            var url = "@Url.Action("LlenarTableVE", "Menu")";
             var fechaInicio = $("#dtpFechaInicio").val();
             var fechaFinal = $("#dtpFechaFinal").val();
             var data = {
@@ -100,37 +101,72 @@
             };
 
         $.post(url, data).done(function (data) {
+            
+            if (parseInt(idCategoria) > 0) {
 
-            document.getElementById("tableDatos").innerHTML =
-                "<tr>" +
-                "<th>#</th>" +
-                "<th>PRODUCTO</th>" +
-                "<th>CANTIDAD</th>" +
-                "<th>FECHA COMPRA</th>" +
-                "<th>PRECIO UNITARIO (COMPRA)</th>" +
-                "<th>PRECIO UNITARIO (VENTA)</th>" +
-                "<th>PRECIO LOTE</th>" +
-                "</tr >";
+                document.getElementById("tableDatos").innerHTML =
+                    "<tr>" +
+                    "<th>#</th>" +
+                    "<th>PRODUCTO</th>" +
+                    "<th>CANTIDAD</th>" +
+                    "<th>PRECIO</th>" +
+                    "<th>MONTO</th>" +
+                    "<th style='display: none;'>CATEGORÍA</th>" +
+                    "<th>FECHA VENTA</th>" +
+                    "</tr >";
 
-            for (var i = 0; i < data.length; i++) {
+                for (var i = 0; i < data.length; i++) {
 
-                var dateString = data[i].FechaIngreso.toString().substr(6);
-                var currentTime = new Date(parseInt(dateString));
-                var month = currentTime.getMonth() + 1;
-                var day = currentTime.getDate();
-                var year = currentTime.getFullYear();
-                var date = day + "-" + month + "-" + year;
+                    var dateString = data[i].FechaFacturacion.toString().substr(6);
+                    var currentTime = new Date(parseInt(dateString));
+                    var month = currentTime.getMonth() + 1;
+                    var day = currentTime.getDate();
+                    var year = currentTime.getFullYear();
+                    var date = day + "-" + month + "-" + year;
 
-                document.getElementById("tableDatos").innerHTML +=
+                    document.getElementById("tableDatos").innerHTML +=
+                        "<tr>" +
+                        "<td>" + (i + 1).toString() + "</td>" +
+                        "<td>" + data[i].NombreProducto + "</td>" +
+                        "<td>" + data[i].Cantidad + "</td>" +
+                        "<td>$" + data[i].Precio.toFixed(2) + "</td>" +
+                        "<td>$" + data[i].MontoDetalleFacturacion.toFixed(2) + "</td>" +
+                        "<td style='display: none;'>" + data[i].Categoria + "</td>" +
+                        "<td>" + date + "</th>" +
+                        "</tr >";
+                }
+            } else if (parseInt(idCategoria) <= 0) {
+                document.getElementById("tableDatos").innerHTML =
+                    "<tr>" +
+                    "<th>#</th>" +
+                    "<th>PRODUCTO</th>" +
+                    "<th>CANTIDAD</th>" +
+                    "<th>PRECIO</th>" +
+                    "<th>MONTO</th>" +
+                    "<th>CATEGORÍA</th>" +
+                    "<th>FECHA VENTA</th>" +
+                    "</tr >";
+
+                for (var i = 0; i < data.length; i++) {
+
+                    var dateString = data[i].FechaFacturacion.toString().substr(6);
+                    var currentTime = new Date(parseInt(dateString));
+                    var month = currentTime.getMonth() + 1;
+                    var day = currentTime.getDate();
+                    var year = currentTime.getFullYear();
+                    var date = day + "-" + month + "-" + year;
+
+                    document.getElementById("tableDatos").innerHTML +=
                     "<tr>" +
                     "<td>" + (i + 1).toString() + "</td>" +
                     "<td>" + data[i].NombreProducto + "</td>" +
                     "<td>" + data[i].Cantidad + "</td>" +
+                    "<td>$" + data[i].Precio.toFixed(2) + "</td>" +
+                    "<td>$" + data[i].MontoDetalleFacturacion.toFixed(2) + "</td>" +
+                    "<td>" + data[i].Categoria + "</td>" +
                     "<td>" + date + "</th>" +
-                    "<td>$" + data[i].PrecioUnitario.toFixed(2) + "</td>" +
-                    "<td>$" + data[i].PrecioVenta.toFixed(2) + "</td>" +
-                    "<td>$" + data[i].PrecioLote.toFixed(2) + "</td>" +
                     "</tr >";
+                }
             }
 
             //Habilitamos el botón si la data es mayor a 0
@@ -146,11 +182,14 @@
     function limpiar() {
         $(function () {
 
-            $("#ddlProductos").val('0');
+            document.getElementById("ddlProductos").innerHTML =
+                "<option value='0'>TODOS</option>";
             $("#ddlProductos").attr('disabled', 'disabled');
             $("#dtpFechaInicio").val(null);
             $("#dtpFechaFinal").val(null);
-            $("#ddlCategorias").val('0');
+            document.getElementById("ddlCategorias").innerHTML =
+                "<option value='0'>TODAS</option>";
+
             $("#btnImprimir").addClass('disabled');
 
             document.getElementById("tableDatos").innerHTML =
@@ -158,10 +197,10 @@
                 "<th>#</th>" +
                 "<th>PRODUCTO</th>" +
                 "<th>CANTIDAD</th>" +
-                "<th>FECHA COMPRA</th>" +
-                "<th>PRECIO UNITARIO (COMPRA)</th>" +
-                "<th>PRECIO UNITARIO (VENTA)</th>" +
-                "<th>PRECIO LOTE</th>" +
+                "<th>PRECIO</th>" +
+                "<th>MONTO</th>" +
+                "<th>CATEGORÍA</th>" +
+                "<th>FECHA VENTA</th>" +
                 "</tr >";
         });
     }
@@ -231,13 +270,12 @@
 
 <table class="table table-bordered" id="tableDatos">
     <tr>
-        <th style="display:none;">ID</th>
         <th>#</th>
         <th>PRODUCTO</th>
         <th>CANTIDAD</th>
-        <th>FECHA COMPRA</th>
-        <th>PRECIO UNITARIO (COMPRA)</th>
-        <th>PRECIO UNITARIO (VENTA)</th>
-        <th>PRECIO LOTE</th>
+        <th>PRECIO</th>
+        <th>MONTO</th>
+        <th>CATEGORÍA</th>
+        <th>FECHA VENTA</th>
     </tr>
 </table>

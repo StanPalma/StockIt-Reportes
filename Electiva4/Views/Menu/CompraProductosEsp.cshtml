@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "Clientes";
+    ViewBag.Title = "Compras Especificadas";
 }
 
 <script type="text/javascript"
@@ -22,6 +22,7 @@
             var fechaInicio = $("#dtpFechaInicio").val();
             var fechaFinal = $("#dtpFechaFinal").val();
             var data = { fechaInicioP: fechaInicio, fechaFinalP: fechaFinal, idCategoriaP: idCategoria };
+            idProducto = "0";
 
             $.post(url, data).done(function (data) {
 
@@ -146,11 +147,13 @@
     function limpiar() {
         $(function () {
 
-            $("#ddlProductos").val('0');
+            document.getElementById("ddlProductos").innerHTML =
+                "<option value='0'>TODOS</option>";
             $("#ddlProductos").attr('disabled', 'disabled');
             $("#dtpFechaInicio").val(null);
             $("#dtpFechaFinal").val(null);
-            $("#ddlCategorias").val('0');
+            document.getElementById("ddlCategorias").innerHTML =
+                "<option value='0'>TODAS</option>";
             $("#btnImprimir").addClass('disabled');
 
             document.getElementById("tableDatos").innerHTML =

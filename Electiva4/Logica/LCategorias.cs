@@ -24,6 +24,29 @@ namespace Electiva4.Logica
             }
         }
 
+        public List<ECategoria> ListSeleccionarCategoriasActivasByIdUsuarioAndFechasForReporteVE(int idUsuario, DateTime fechaInicio, DateTime fechaFinal)
+        {
+            List<ECategoria> lista = new List<ECategoria>();
+            try
+            {
+                DataSet ds = WS.seleccionarCategoriasActivasByIdUsuarioAndFechasForReporte(idUsuario, fechaInicio, fechaFinal);
+
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    ECategoria eCategoria = new ECategoria();
+                    eCategoria.IdCategoria = int.Parse(row["ID_CATEGORIA"].ToString());
+                    eCategoria.Categoria = row["CATEGORIA"].ToString();
+                    lista.Add(eCategoria);
+                }
+
+                return lista;
+            }
+            catch (Exception)
+            {
+                return lista;
+            }
+        }
+
         public DataTable SeleccionarCategoriasActivasByIdUsuarioAndFechasForReportePE(int idUsuario, DateTime fechaInicio, DateTime fechaFinal)
         {
             try
