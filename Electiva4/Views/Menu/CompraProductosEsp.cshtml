@@ -10,7 +10,9 @@
 <script>
     //Variables para guardar los datos de idCategoria e idProducto
     var idCategoria = "0";
+    var nombreCategoria = "TODAS";
     var idProducto = "0";
+    var nombreProducto = "TODOS";
 
     //Función para llenar ddlProductos
     function llenarDDLProductos() {
@@ -46,6 +48,7 @@
         $(function () {
 
             idCategoria = sel.value;
+            nombreCategoria = sel.options[sel.selectedIndex].text;
 
             $("#btnImprimir").addClass('disabled');
 
@@ -56,6 +59,7 @@
     //Función para cuando cambie ddlProductos
     function getValddlProd(sel) {
         idProducto = sel.value;
+        nombreProducto = sel.options[sel.selectedIndex].text;
         $("#btnImprimir").addClass('disabled');
     }
 
@@ -95,7 +99,10 @@
             var url = "@Url.Action("LlenarTableCPE", "Menu")";
             var fechaInicio = $("#dtpFechaInicio").val();
             var fechaFinal = $("#dtpFechaFinal").val();
-            var data = { idProductoP: idProducto, fechaInicioP: fechaInicio, fechaFinalP: fechaFinal, idCategoriaP: idCategoria };
+            var data = {
+                idProductoP: idProducto, fechaInicioP: fechaInicio, fechaFinalP: fechaFinal, idCategoriaP: idCategoria, nomProductoP: nombreProducto,
+                nomCategoriaP: nombreCategoria
+            };
 
         $.post(url, data).done(function (data) {
 
@@ -162,6 +169,12 @@
                 "<th>PRECIO LOTE</th>" +
                 "</tr >";
         });
+    }
+
+    //Función para btnImprimir
+    function imprimir() {
+        //Invocamos la URL para imprimir el reporte
+        window.location.href = "/Menu/ImprimirRCPEsp";
     }
 </script>
 

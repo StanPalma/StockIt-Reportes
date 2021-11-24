@@ -222,7 +222,7 @@ namespace Electiva4.Controllers
             return Json(productosList, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult LlenarTableCPE(string idProductoP, string fechaInicioP, string fechaFinalP, string idCategoriaP)
+        public JsonResult LlenarTableCPE(string idProductoP, string fechaInicioP, string fechaFinalP, string idCategoriaP, string nomProductoP, string nomCategoriaP)
         {
             List<EReporteProductosDetalle> eReporteProductosDetalleList = new List<EReporteProductosDetalle>();
             if (Session["UserId"] != null)
@@ -249,9 +249,11 @@ namespace Electiva4.Controllers
 
                     //Guardamos los datos en las variables de sesión que serán utilizadas para imprimir el reporte
                     Session["IdProducto"] = idProductoP;
+                    Session["NomProducto"] = nomProductoP;
                     Session["FechaInicio"] = fechaInicioCadena;
                     Session["FechaFinal"] = fechaFinalCadena;
-                    Session["IdProducto"] = idCategoriaP;
+                    Session["IdCategoria"] = idCategoriaP;
+                    Session["NomCategoria"] = nomCategoriaP;
                     Session["DatosDetalleList"] = eReporteProductosDetalleList;
                 }
                 else
@@ -270,6 +272,46 @@ namespace Electiva4.Controllers
             }
 
             return Json(eReporteProductosDetalleList, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult ImprimirRCPEsp()
+        {
+            try
+            {
+                ReporteCompraProductosEspController reporteCompraProductosEspController = new ReporteCompraProductosEspController();
+
+                int idCategoria = Session["IdCategoria"] != null && Session["IdCategoria"].ToString() != ""
+                    ? int.Parse(Session["IdCategoria"].ToString())
+                    : 0;
+
+                string nombreCategoria = Session["NomCategoria"] != null && Session["NomCategoria"].ToString() != ""
+                    ? Session["NomCategoria"].ToString()
+                    : "TODAS";
+
+                int idProducto = Session["IdProducto"] != null && Session["IdProducto"].ToString() != ""
+                    ? int.Parse(Session["IdProducto"].ToString())
+                    : 0;
+
+                string nombreProducto = Session["NomProducto"] != null && Session["NomProducto"].ToString() != ""
+                    ? Session["NomProducto"].ToString()
+                    : "TODOS";
+
+                List<EReporteProductosDetalle> eReporteProductosDetalleList = Session["DatosDetalleList"] != null
+                    ? Session["DatosDetalleList"] as List<EReporteProductosDetalle>
+                    : new List<EReporteProductosDetalle>();
+
+                string fechaInicio = Session["FechaInicio"] != null ? Session["FechaInicio"].ToString() : "00-00-0000";
+                string fechaFinal = Session["FechaFinal"] != null ? Session["FechaFinal"].ToString() : "00-00-0000";
+
+
+                return reporteCompraProductosEspController.generarReporte(idCategoria, idProducto, fechaInicio, fechaFinal, eReporteProductosDetalleList, nombreCategoria, 
+                    nombreProducto, Session["UserCorreo"].ToString(), this.Response, this.Server);
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
         }
 
         #endregion
