@@ -321,17 +321,127 @@ namespace Electiva4.Controllers
             return View();
         }
 
+        #region Métodos para Ventas
         public ActionResult Ventas()
         {
-            List<SelectListItem> clientes = new List<SelectListItem>();
-            clientes.Add(new SelectListItem() { Text = "Cliente 1", Value = "1"});
-            clientes.Add(new SelectListItem() { Text = "Cliente 2", Value = "2" });
-            clientes.Add(new SelectListItem() { Text = "Cliente 3", Value = "3" });
-
-            // Enviar lista a ViewBag para recibir en la Vista
-            ViewBag.clientes = clientes;
-
-            return View();
+            if (Session["UserCorreo"] != null)
+            {
+                return View();
+            }
+            else
+            {
+                idUsuario = 0;
+                return Redirect("~/Login/Login");
+            }
         }
+
+        public JsonResult LlenarDDLClientes(string fechaInicioP, string fechaFinalP)
+        {
+            List<ECliente> clientesList = new List<ECliente>();
+            if (Session["UserId"] != null)
+            {
+                idUsuario = int.Parse(Session["UserId"].ToString());
+
+                if ((fechaInicioP != "" && fechaFinalP != ""))
+                {
+                    DateTime fechaInicio = DateTime.Parse(fechaInicioP).Date;
+                    DateTime fechaFinal = DateTime.Parse(fechaFinalP).Date;
+
+                    clientesList = new LClientes().SeleccionarClientesActivosByIdUsuarioForReporte(idUsuario, fechaInicio, fechaFinal);
+                }
+            }
+
+            return Json(clientesList, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult LlenarTableV(string fechaInicioP, string fechaFinalP, string idClienteP, string nombreClienteP)
+        {
+            List<EReporteFacturacionEncabezado> eReporteFacturacionEncabezadoList = new List<EReporteFacturacionEncabezado>();
+            if (Session["UserId"] != null)
+            {
+                idUsuario = int.Parse(Session["UserId"].ToString());
+
+                if (idUsuario > 0)
+                {
+                    int idCliente = idClienteP != null && idClienteP != "" ? int.Parse(idClienteP) : 0;
+                    DateTime fechaInicio = DateTime.Parse(new LUtils().fechaHoraActual()).Date;
+                    DateTime fechaFinal = DateTime.Parse(new LUtils().fechaHoraActual()).Date;
+
+                    if ((fechaInicioP != "" && fechaFinalP != ""))
+                    {
+                        fechaInicio = DateTime.Parse(fechaInicioP).Date;
+                        fechaFinal = DateTime.Parse(fechaFinalP).Date;
+                    }
+
+                    fechaInicioCadena = fechaInicio.ToString("dd-MM-yyyy");
+                    fechaFinalCadena = fechaFinal.ToString("dd-MM-yyyy");
+
+                    eReporteFacturacionEncabezadoList = new LEncabezadoFacturacion().EncabezadosReporteFacturacion(fechaInicio, fechaFinal, idUsuario, idCliente);
+
+                    //Guardamos los datos en las variables de sesión que serán utilizadas para imprimir el reporte
+                    Session["FechaInicio"] = fechaInicioCadena;
+                    Session["FechaFinal"] = fechaFinalCadena;
+                    Session["IdCliente"] = idClienteP;
+                    Session["NomCliente"] = nombreClienteP;
+                    Session["DatosEncabezadoList"] = eReporteFacturacionEncabezadoList;
+                }
+                else
+                {
+                    //Agregar un objeto
+                    Redirect("~/Login/Login");
+                }
+            }
+            else
+            {
+                fechaInicioCadena = "";
+                fechaFinalCadena = "";
+                idUsuario = 0;
+                //Agregar un objeto
+                Redirect("~/Login/Login");
+            }
+
+            return Json(eReporteFacturacionEncabezadoList, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult LlenarTableVD(string idEncabezadoP, string nombreClienteP, string telefonoClienteP, string fechaFacturacionP, string montoEncabezadoFacturacionP)
+        {
+            List<EDetalleFacturacion> eDetalleFacturacionList = new List<EDetalleFacturacion>();
+            if (Session["UserId"] != null)
+            {
+                idUsuario = int.Parse(Session["UserId"].ToString());
+
+                if (idUsuario > 0)
+                {
+                    int idEncabezado = int.Parse(idEncabezadoP);
+
+                    //Obtenemos los datos para el encabezado de la compra
+                    EReporteFacturacionEncabezado eReporteFacturacionEncabezado = new EReporteFacturacionEncabezado();
+                    eReporteFacturacionEncabezado.NombreCliente = nombreClienteP;
+                    eReporteFacturacionEncabezado.TelefonoCliente = telefonoClienteP;
+                    eReporteFacturacionEncabezado.FechaFacturacion = DateTime.Parse(fechaFacturacionP);
+                    eReporteFacturacionEncabezado.MontoEncabezadoFacturacion = Double.Parse(montoEncabezadoFacturacionP.Replace("$", ""));
+
+                    eDetalleFacturacionList = new LDetalleFacturacion().SeleccionarDetalleFacturacionByIdEncabezadoFacturacion(idEncabezado);
+
+                    Session["IdEncabezado"] = idEncabezado;
+                    Session["DatosEncabezado"] = eReporteFacturacionEncabezado;
+                    Session["DatosDetalleList"] = eDetalleFacturacionList;
+                }
+                else
+                {
+                    //Agregar un objeto
+                    Redirect("~/Login/Login");
+                }
+            }
+            else
+            {
+                idUsuario = 0;
+                //Agregar un objeto
+                Redirect("~/Login/Login");
+            }
+
+            return Json(eDetalleFacturacionList, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
     }
 }

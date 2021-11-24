@@ -138,6 +138,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Logica\LCategorias.cs" />
+    <Compile Include="Logica\LClientes.cs" />
+    <Compile Include="Logica\LDetalleFacturacion.cs" />
+    <Compile Include="Logica\LEncabezadoFacturacion.cs" />
     <Compile Include="Logica\LProductos.cs" />
     <Compile Include="Logica\LUsuarios.cs" />
     <Compile Include="Logica\LUtils.cs" />

@@ -83,11 +83,6 @@
                     document.getElementById("ddlCategorias").innerHTML +=
                         "<option value='" + data[i].IdCategoria + "'>" + data[i].Categoria +"</option>";
                 }
-
-                //Habilitamos el botón si la data es mayor a 0
-                if (data.length > 0) {
-                    $("#btnImprimir").removeClass('disabled');
-                }
             });
         });
     }

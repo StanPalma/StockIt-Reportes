@@ -1,33 +1,257 @@
 ﻿
 @{
     ViewBag.Title = "Ventas";
-    List<SelectListItem> clientes = (List<SelectListItem>)ViewBag.clientes;
 }
 
-<h2>Ventas</h2>
+<script type="text/javascript"
+        src="~/Scripts/jquery-3.4.1.min.js">
+</script>
+
+<script>
+
+    var listaDatos = "";//Variable para almacenar los datos consultados
+    var opcionSeleccionada = 0;// 1 - Encabezado, 2 - Detalle
+    var idCliente = "0";
+    var nombreCliente = "TODAS";
+
+    //Función para cuando cambie ddlClientes
+    function getValddlCli(sel) {
+        $(function () {
+
+            idCliente = sel.value;
+            nombreCliente = sel.options[sel.selectedIndex].text;
+
+            $("#btnImprimir").addClass('disabled');
+        });
+    }
+
+    //Función para cuando cambie Fecha Inicio o Fecha Final
+    function cambioFecha() {
+        $(function () {
+            $("#btnImprimir").addClass('disabled');
+        });
+    }
+
+
+    //Función para cargar el DetalleCompra
+    $(document).ready(function () {
+
+        $("#tableDatos").on('click', '.btnSelect', function () {
+
+            //Obtener la fila actual
+            var currentRow = $(this).closest("tr");
+
+            var idEncabezado = currentRow.find("td:eq(0)").html();
+            var nomCliente = currentRow.find("td:eq(2)").html();
+            var telCliente = currentRow.find("td:eq(3)").html();
+            var fechaFacturacion = currentRow.find("td:eq(4)").html();
+            var monto = currentRow.find("td:eq(5)").html();
+
+            //Llamar el detalle compra
+            var url = "@Url.Action("LlenarTableVD", "Menu")";
+            var data = {
+                idEncabezadoP: idEncabezado, nombreClienteP: nomCliente, telefonoClienteP: telCliente, fechaFacturacionP: fechaFacturacion,
+                montoEncabezadoFacturacionP: monto
+            };
+
+            $.post(url, data).done(function (data) {
+
+                //Guardamos los datos para enviar al método que genera el reporte
+                listaDatos = data;
+
+                document.getElementById("tableDatos").innerHTML =
+                "<tr>" +
+                "<th>#</th>" +
+                "<th>PRODUCTO</th>" +
+                "<th>CANTIDAD</th>" +
+                "<th>PRECIO</th>" +
+                "<th>SUB TOTAL</th>" +
+                "</tr >";
+
+                for (var i = 0; i < data.length; i++) {
+
+                    document.getElementById("tableDatos").innerHTML +=
+                    "<tr>" +
+                    "<td class='btnSelect'>" + (i + 1).toString() + "</td>" +
+                    "<td>" + data[i].NombreProducto + "</td>" +
+                    "<td>" + data[i].Cantidad + "</th>" +
+                    "<td>$" + data[i].Precio.toFixed(2) + "</td>" +
+                    "<td>$" + data[i].MontoDetalleFacturacion.toFixed(2) + "</td>" +
+                    "</tr >";
+                }
+
+                //Habilitamos el botón si la data es mayor a 0
+                if (data.length > 0) {
+                    $("#btnImprimir").removeClass('disabled');
+                }
+
+                $("#btnLimpiar").val('Volver');
+                $("#dtpFechaInicio").prop('disabled', true);
+                $("#dtpFechaFinal").prop('disabled', true);
+                $("#ddlClientes").attr('disabled', 'disabled');
+
+                opcionSeleccionada = 2;
+
+            });
+        });
+    });
+
+    //Función para cuando cambie Fecha Inicio o Fecha Final
+    function cambioFecha() {
+        $(function () {
+            $("#btnImprimir").addClass('disabled');
+
+            var url = "@Url.Action("LlenarDDLClientes", "Menu")";
+            var fechaInicio = $("#dtpFechaInicio").val();
+            var fechaFinal = $("#dtpFechaFinal").val();
+            var data = { fechaInicioP: fechaInicio, fechaFinalP: fechaFinal };
+
+            $.post(url, data).done(function (data) {
+
+                document.getElementById("ddlClientes").innerHTML =
+                    "<option value='0'>TODOS</option>";
+
+                for (var i = 0; i < data.length; i++) {
+
+                    document.getElementById("ddlClientes").innerHTML +=
+                        "<option value='" + data[i].IdCliente + "'>" + data[i].NombreCliente +"</option>";
+                }
+            });
+        });
+    }
+
+    //Función para btnFiltrar
+    function filtrar() {
+        $(function () {
+
+            var url = "@Url.Action("LlenarTableV", "Menu")";
+            var fechaInicio = $("#dtpFechaInicio").val();
+            var fechaFinal = $("#dtpFechaFinal").val();
+            var data = { fechaInicioP: fechaInicio, fechaFinalP: fechaFinal, idClienteP: idCliente, nombreClienteP: nombreCliente };
+
+        $.post(url, data).done(function (data) {
+
+            //Guardamos los datos para enviar al método que genera el reporte
+            listaDatos = data;
+
+            document.getElementById("tableDatos").innerHTML =
+                "<tr>" +
+                "<th style='display: none;'>ID</th>" +
+                "<th>#</th>" +
+                "<th>CLIENTE</th>" +
+                "<th>TELÉFONO CLIENTE</th>" +
+                "<th>FECHA DE FACTURACIÓN</th>" +
+                "<th>MONTO</th>"
+                "</tr >";
+
+            for (var i = 0; i < data.length; i++) {
+
+                var dateString = data[i].FechaFacturacion.toString().substr(6);
+                var currentTime = new Date(parseInt(dateString));
+                var month = currentTime.getMonth() + 1;
+                var day = currentTime.getDate();
+                var year = currentTime.getFullYear();
+                var date = day + "-" + month + "-" + year;
+
+                document.getElementById("tableDatos").innerHTML +=
+                "<tr>" +
+                "<td style='display: none;'>" + data[i].IdEncabezadoFacturacion + "</td>" +
+                "<td class='btnSelect'><a>" + (i + 1).toString() + "</a></td>" +
+                "<td>" + data[i].NombreCliente + " " + data[i].ApellidoCliente + "</td>" +
+                "<td>" + data[i].TelefonoCliente + "</td>" +
+                "<td>" + date + "</th>" +
+                "<td>$" + data[i].MontoEncabezadoFacturacion.toFixed(2) + "</td>" +
+                "</tr >";
+            }
+
+            //Habilitamos el botón si la data es mayor a 0
+            if (data.length > 0) {
+                $("#btnImprimir").removeClass('disabled');
+            }
+
+            opcionSeleccionada = 1;
+
+            });
+        });
+    }
+
+    //Función para btnLimpiar
+    function limpiar() {
+        $(function () {
+            if (opcionSeleccionada == 1) {
+                $("#dtpFechaInicio").val(null);
+                $("#dtpFechaFinal").val(null);
+                $("#ddlClientes").val('0');
+                $("#btnImprimir").addClass('disabled');
+
+                document.getElementById("tableDatos").innerHTML =
+                "<tr>" +
+                "<th style='display: none;'>ID</th>" +
+                "<th>#</th>" +
+                "<th>CLIENTE</th>" +
+                "<th>TELÉFONO CLIENTE</th>" +
+                "<th>FECHA DE FACTURACIÓN</th>" +
+                "<th>MONTO</th>"
+                "</tr >";
+
+            } else if (opcionSeleccionada == 2) {
+                $("#btnLimpiar").val('Limpiar');
+                $("#dtpFechaInicio").prop('disabled', false);
+                $("#dtpFechaFinal").prop('disabled', false);
+                $("#ddlClientes").removeAttr('disabled');
+                filtrar();
+            }
+        });
+    }
+
+    //Función para btnImprimir
+    function imprimir() {
+        //Invocamos la URL para imprimir el reporte
+        window.location.href = "/Menu/ImprimirRCP";
+    }
+</script>
+
+<div class="text-center">
+    <h2><b>Reporte de Ventas</b></h2>
+</div>
+
+<div class="col-lg-12">
+    <br />
+</div>
+
 <div class="col-lg-6">
     <label>Fecha inicio</label>
-    <input class="form-control" type="date" />
+    <input class="form-control" id="dtpFechaInicio" onchange="cambioFecha();" type="date" />
     <br />
 </div>
 
 <div class="col-lg-6">
     <label>Fecha final</label>
-    <input class="form-control" type="date" />
-    <br />
-</div>
-<div class="col-lg-12">
-    <label>Cliente</label>
-    @Html.DropDownList("clientes", clientes, "Seleccione cliente", new { @class = "form-control" })
+    <input class="form-control" id="dtpFechaFinal" onchange="cambioFecha();" type="date" />
     <br />
 </div>
 
 <div class="col-lg-6">
-    <div class="col-lg-3">
-        <input class="btn-success" type="submit" value="Filtrar" />
+    <label>Cliente</label>
+    <select id="ddlClientes" class="form-control" onchange="getValddlCli(this);">
+        <option value="0">TODOS</option>
+    </select>
+    <br />
+</div>
+
+<div class="col-lg-12">
+    <div class="col-lg-1">
+        <input class="btn-success btn" id="btnFiltrar" onclick="filtrar();" type="button" value="Filtrar" />
     </div>
-    <div class="col-lg-3">
-        <input class="btn-danger" type="reset" value="Limpiar" />
+    <div class="col-lg-1">
+        <input class="btn-danger btn" id="btnLimpiar" onclick="limpiar();" type="button" value="Limpiar" />
+    </div>
+    <div class="col-lg-1">
+        <div onclick="imprimir();" class="btn-primary btn media-right disabled" id="btnImprimir">
+            <span class="glyphicon glyphicon-print">
+
+            </span>
+        </div>
     </div>
 </div>
 
@@ -35,25 +259,13 @@
     <br />
 </div>
 
-<table class="table table-bordered">
+<table class="table table-bordered" id="tableDatos">
     <tr>
-        <th>Nombre cliente</th>
-        <th>Fecha de facturación</th>
-        <th>Cantidad</th>
-        <th>Total</th>
-    </tr>
-    <tr>
-        <td><br /></td>
-        <td><br /></td>
-        <td><br /></td>
-        <td><br /></td>
+        <th style="display:none;">ID</th>
+        <th>#</th>
+        <th>CLIENTE</th>
+        <th>TELÉFONO CLIENTE</th>
+        <th>FECHA DE FACTURACIÓN</th>
+        <th>MONTO</th>
     </tr>
 </table>
-
-<a href="~/ReporteVentas/pdfVentas">
-    <div class="btn-primary btn-sm media-right">
-        <span class="glyphicon glyphicon-print">
-
-        </span>
-    </div>
-</a>
