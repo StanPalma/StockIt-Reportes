@@ -591,7 +591,7 @@ namespace Electiva4.Controllers
         {
             try
             {
-                ReporteCompraProductosEspController reporteCompraProductosEspController = new ReporteCompraProductosEspController();
+                ReporteVentasEspController reporteVentasEspController = new ReporteVentasEspController();
 
                 int idCategoria = Session["IdCategoria"] != null && Session["IdCategoria"].ToString() != ""
                     ? int.Parse(Session["IdCategoria"].ToString())
@@ -609,15 +609,15 @@ namespace Electiva4.Controllers
                     ? Session["NomProducto"].ToString()
                     : "TODOS";
 
-                List<EReporteProductosDetalle> eReporteProductosDetalleList = Session["DatosDetalleList"] != null
-                    ? Session["DatosDetalleList"] as List<EReporteProductosDetalle>
-                    : new List<EReporteProductosDetalle>();
+                List<EReporteFacturacionDetalle> eReporteFacturacionDetalleList = Session["DatosDetalleList"] != null
+                    ? Session["DatosDetalleList"] as List<EReporteFacturacionDetalle>
+                    : new List<EReporteFacturacionDetalle>();
 
                 string fechaInicio = Session["FechaInicio"] != null ? Session["FechaInicio"].ToString() : "00-00-0000";
                 string fechaFinal = Session["FechaFinal"] != null ? Session["FechaFinal"].ToString() : "00-00-0000";
 
 
-                return reporteCompraProductosEspController.generarReporte(idCategoria, idProducto, fechaInicio, fechaFinal, eReporteProductosDetalleList, nombreCategoria,
+                return reporteVentasEspController.generarReporte(idCategoria, idProducto, fechaInicio, fechaFinal, eReporteFacturacionDetalleList, nombreCategoria,
                     nombreProducto, Session["UserCorreo"].ToString(), this.Response, this.Server);
             }
             catch (Exception)
