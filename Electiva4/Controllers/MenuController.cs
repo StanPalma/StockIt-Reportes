@@ -368,7 +368,7 @@ namespace Electiva4.Controllers
             return Json(clientesList, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult LlenarTableRE(string fechaInicioP, string fechaFinalP, string estadoP, string idClienteP)
+        public JsonResult LlenarTableRE(string fechaInicioP, string fechaFinalP, string estadoP, string idClienteP, string nombreClienteP, string nomEstadoP)
         {
             List<EReporteReservasEncabezado> eReporteReservasEncabezadoList = new List<EReporteReservasEncabezado>();
             if (Session["UserId"] != null)
@@ -396,8 +396,8 @@ namespace Electiva4.Controllers
                     //Guardamos los datos en las variables de sesión que serán utilizadas para imprimir el reporte
                     Session["FechaInicio"] = fechaInicioCadena;
                     Session["FechaFinal"] = fechaFinalCadena;
-                    Session["EstadoReserva"] = estadoP;
-                    Session["IdCliente"] = idClienteP;
+                    Session["NombreEstado"] = nomEstadoP;
+                    Session["NombreCliente"] = nombreClienteP;
                     Session["DatosEncabezadoList"] = eReporteReservasEncabezadoList;
                 }
                 else
@@ -458,6 +458,44 @@ namespace Electiva4.Controllers
             }
 
             return Json(eReporteReservasDetalleList, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult ImprimirRR()
+        {
+            try
+            {
+                ReporteReservasController reporteReservasController = new ReporteReservasController();
+
+                int idEncabezadoFacturacion = Session["IdEncabezado"] != null && Session["IdEncabezado"].ToString() != ""
+                    ? int.Parse(Session["IdEncabezado"].ToString())
+                    : 0;
+
+                List<EReporteReservasEncabezado> eReporteReservasEncabezadoList = Session["DatosEncabezadoList"] != null
+                    ? Session["DatosEncabezadoList"] as List<EReporteReservasEncabezado>
+                    : new List<EReporteReservasEncabezado>();
+
+                List<EReporteReservasDetalle> eReporteReservasDetalleList = Session["DatosDetalleList"] != null
+                    ? Session["DatosDetalleList"] as List<EReporteReservasDetalle>
+                    : new List<EReporteReservasDetalle>();
+
+                EReporteReservasEncabezado eReporteReservasEncabezado = Session["DatosEncabezado"] != null
+                    ? Session["DatosEncabezado"] as EReporteReservasEncabezado
+                    : new EReporteReservasEncabezado();
+
+                string fechaInicio = Session["FechaInicio"] != null ? Session["FechaInicio"].ToString() : "00-00-0000";
+                string fechaFinal = Session["FechaFinal"] != null ? Session["FechaFinal"].ToString() : "00-00-0000";
+                string estadoReserva = Session["NombreEstado"] != null ? Session["NombreEstado"].ToString() : "00-00-0000";
+                string nombreCliente = Session["NombreCliente"] != null ? Session["NombreCliente"].ToString() : "00-00-0000";
+
+
+                return reporteReservasController.generarReporte(idEncabezadoFacturacion, eReporteReservasEncabezadoList, eReporteReservasDetalleList, eReporteReservasEncabezado,
+                    fechaInicio, fechaFinal, estadoReserva, nombreCliente, Session["UserCorreo"].ToString(), this.Response, this.Server);
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
         }
         #endregion
 

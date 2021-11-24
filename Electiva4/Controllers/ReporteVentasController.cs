@@ -37,18 +37,15 @@ namespace Electiva4.Controllers
 
             if (idEncabezadoFacturacion == 0)
             {
-                //Hacer reporte general
-                return generarReporteCompraGeneral(correo, response, server);
+                return generarReporteVentaGeneral(correo, response, server);
             }
             else
             {
-                //Hacer reporte específicado por idEncabezadoCompra
-                //Hacer reporte específicado por idEncabezadoCompra
-                return generarReporteCompraDetalle(correo, response, server);
+                return generarReporteVentaDetalle(correo, response, server);
             }
         }
 
-        public ActionResult generarReporteCompraGeneral(string correo, HttpResponseBase response, HttpServerUtilityBase server)
+        public ActionResult generarReporteVentaGeneral(string correo, HttpResponseBase response, HttpServerUtilityBase server)
         {
             try
             {
@@ -236,7 +233,7 @@ namespace Electiva4.Controllers
             return null;
         }
 
-        private ActionResult generarReporteCompraDetalle(string correo, HttpResponseBase response, HttpServerUtilityBase server)
+        private ActionResult generarReporteVentaDetalle(string correo, HttpResponseBase response, HttpServerUtilityBase server)
         {
             try
             {

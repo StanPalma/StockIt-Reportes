@@ -161,8 +161,8 @@
             var fechaInicio = $("#dtpFechaInicio").val();
             var fechaFinal = $("#dtpFechaFinal").val();
             var data = {
-                idClienteP: idCliente, fechaInicioP: fechaInicio, fechaFinalP: fechaFinal, estadoP: estado, nomProductoP: nombreCliente,
-                nomCategoriaP: nombreEstado
+                idClienteP: idCliente, fechaInicioP: fechaInicio, fechaFinalP: fechaFinal, estadoP: estado, nombreClienteP: nombreCliente,
+                nomEstadoP: nombreEstado
             };
 
         $.post(url, data).done(function (data) {
@@ -262,7 +262,7 @@
     //Función para btnImprimir
     function imprimir() {
         //Invocamos la URL para imprimir el reporte
-        window.location.href = "/Menu/ImprimirRVEsp";
+        window.location.href = "/Menu/ImprimirRR";
     }
 </script>
 
