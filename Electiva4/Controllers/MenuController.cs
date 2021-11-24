@@ -479,5 +479,20 @@ namespace Electiva4.Controllers
             }
         }
         #endregion
+
+        #region Métodos para Ventas
+        public ActionResult VentasEsp()
+        {
+            if (Session["UserCorreo"] != null)
+            {
+                return View();
+            }
+            else
+            {
+                idUsuario = 0;
+                return Redirect("~/Login/Login");
+            }
+        }
+        #endregion
     }
 }

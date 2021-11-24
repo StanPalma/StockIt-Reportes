@@ -216,6 +216,7 @@
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </Content>
+    <Content Include="Views\Menu\VentasEsp.cshtml" />
     <None Include="Web References\WSStockIt\WebServiceSI.disco" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
